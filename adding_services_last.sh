@@ -1,7 +1,5 @@
 #!/bin/bash
 fqdn="nsxt.eni.com"
-user="guestuser1"
-password="2s2AAZ8oMmbRGqIpBgHr?"
 file="ports2.txt"
 read -e -i "$policy" -p "Please enter policy name " input
 policy="${input:-$policy}"
