@@ -1,6 +1,4 @@
 #!/bin/bash
-# Author: Dina Hassan
-# Email: dhassan@vmware.com
 fqdn="nsxt.eni.com"
 user="guestuser1"
 password="2s2AAZ8oMmbRGqIpBgHr?"

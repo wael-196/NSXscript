@@ -1,6 +1,4 @@
 #!/bin/bash
-# Author: Dina Hassan
-# Email: dhassan@vmware.com
 fqdn="vip-nsx-mgmt.vrack.vsphere.local"
 user="admin"
 password="VMware123!VMware123!"
