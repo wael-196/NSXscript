@@ -1,0 +1,131 @@
+#!/bin/bash
+# Author: Dina Hassan
+# Email: dhassan@vmware.com
+fqdn="vip-nsx-mgmt.vrack.vsphere.local"
+user="admin"
+password="VMware123!VMware123!"
+file=$1
+newservices=''
+services=''
+flow=""
+policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
+ policy=default-layer3-section
+echo "========================================================================================"
+echo -e "Processing flow of policy $policy and removing duplicates: "
+echo "========================================================================================"
+for i in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | sort | uniq | sed 's/ //g' | sed 's/"//g' );
+do rule=$(echo $i | awk  -F ',' '{for(i=3; i<=NF; i++) {print $i}}' | grep  CATCH_* | sed 's/CATCH_//g');
+# echo $i
+# echo "rule=$rule" ;
+protocap=$(echo $i | awk -F ',' '{print $2}');
+# echo "protocap=$protocap" ;
+destport=$(echo $i | awk -F ',' '{print $3}') ; 
+# echo "destport=$destport" ;
+for i in $(echo $rule); do flow=$protocap"*"$destport"*"$i"*""\n"$flow ; done 
+done
+echo "========================================================================================" ;
+echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
+echo "========================================================================================" ;
+echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq
+
+for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq ); 
+do echo "========================================================================================" ;
+echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
+echo "========================================================================================" ;
+services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s )
+if [[ -z $(echo $services | grep "\"services\" :" ) ]] ; 
+then 
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $services  ;
+exit 1 ;
+else  
+echo "========================================================================================" ;
+echo -e "\033[1;32mOld services associated with rule $i (ignoring TCP_65535) :\033[0m" ;
+echo "========================================================================================" ;
+services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/TCP_65535",++' | sed 's+"/infra/services/TCP_65535"++')
+echo -e $services | sed 's+/infra/services/++g'
+fi
+newservices='';
+echo "========================================================================================"
+echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
+echo "========================================================================================"
+Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" ) ;
+for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort | uniq ) ; 
+do protocap=$(echo $x | awk -F '_' '{print $1}');
+protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
+destport=$(echo $x | awk -F '_' '{print $2}');
+Test='';
+within=0
+rang=0
+if [[ "$Ranges" ]];
+then
+for R in $(echo $Ranges) ; do 
+a=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $R | awk -F '*' '{print $1}') ;
+e=$(echo $destport | awk -F '-' '{print $1}')
+f=$(echo $destport | awk -F '-' '{print $2}')
+
+# echo $a , $b , $c , $e , $f , $protocap
+if  [[ $(echo $x | grep "-") ]] && (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif  [[ $(echo $x | grep "-") ]] && (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif  [[ $(echo $x | grep "-") ]] && (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
+then
+echo Ignore Adding $x as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+fi
+done
+fi
+if [[ $(echo $x | grep "-") ]] && (( "$within" == "0" ));
+then
+x=R_$x;
+Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$x\", ;
+elif (( "$within" == "0" )) ;
+then
+Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$x\", ;
+fi
+if [[ "$Test" ]];
+then
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $Test  ;
+exit 1
+elif (( "$within" == "0" ))
+then
+echo Service $x is added ;
+fi
+done
+if [ "$services" == "  " ] ; 
+then
+newservices=${newservices:0:-1} ; 
+fi
+services="\"services\" : [$newservices $services],"
+newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
+result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
+if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
+then 
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $result  ;
+exit 1 ;
+else  
+echo "========================================================================================"
+echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
+echo "========================================================================================"
+echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
+fi
+done 
