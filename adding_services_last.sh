@@ -1,5 +1,4 @@
 #!/bin/bash
-fqdn="nsxt.eni.com"
 file="ports2.txt"
 read -e -i "$policy" -p "Please enter policy name " input
 policy="${input:-$policy}"
