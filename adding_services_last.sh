@@ -8,6 +8,7 @@ policy="${input:-$policy}"
 read -e -i "$rule" -p "Please enter rule name " input
 rule="${input:-$rule}"
 newservices=''
+dummyport=TCP_65535
 services=''
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory : \033[0m"
@@ -42,7 +43,7 @@ else
 echo "========================================================================================" ;
 echo -e "\033[1;32mOld services associated with rule $rule (ignoring TCP_65535) :\033[0m" ;
 echo "========================================================================================" ;
-services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/TCP_65535",++' | sed 's+"/infra/services/TCP_65535"++')
+services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
 echo -e "$services" | sed 's+/infra/services/++g' ; 
 fi 
 echo "========================================================================================"
