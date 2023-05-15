@@ -3,10 +3,8 @@ fqdn="xxx"
 user="xxx"
 password="xxx"
 file="ports2.txt"
-read -e -i "$policy" -p "Please enter policy name " input
-policy="${input:-$policy}"
-read -e -i "$rule" -p "Please enter rule name " input
-rule="${input:-$rule}"
+policy=$1
+rule=$2
 newservices=''
 dummyport=TCP_65535
 services=''
