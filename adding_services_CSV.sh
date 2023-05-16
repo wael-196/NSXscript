@@ -53,6 +53,8 @@ for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$
 do protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
+e=$(echo $destport | awk -F '-' '{print $1}')
+f=$(echo $destport | awk -F '-' '{print $2}')
 Test='';
 within=0
 rang=0
@@ -62,9 +64,6 @@ for R in $(echo $Ranges) ; do
 a=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $R | awk -F '*' '{print $1}') ;
-e=$(echo $destport | awk -F '-' '{print $1}')
-f=$(echo $destport | awk -F '-' '{print $2}')
-
 # echo $a , $b , $c , $e , $f , $protocap
 if  [[ $(echo $x | grep "-") ]] && (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
