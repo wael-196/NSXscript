@@ -12,7 +12,7 @@ policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
 echo "========================================================================================"
 echo -e "Processing flow of policy $policy and removing duplicates: "
 echo "========================================================================================"
-for i in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | sort | uniq | sed 's/ //g' | sed 's/"//g' );
+for i in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | sort -n | uniq | sed 's/ //g' | sed 's/"//g' );
 do rule=$(echo $i | awk  -F ',' '{for(i=3; i<=NF; i++) {print $i}}' | grep  CATCH_* | sed 's/CATCH_//g');
 # echo $i
 # echo "rule=$rule" ;
@@ -25,9 +25,9 @@ done
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
-echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq
+echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -n | uniq
 
-for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq ); 
+for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -n | uniq ); 
 do echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
@@ -48,8 +48,34 @@ newservices='';
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
-Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" ) ;
-for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort | uniq ) ; 
+echo "========================================================================================"
+echo -e "\033[1;32mChecking if there are services to be concatinated: \033[0m"
+echo "========================================================================================"
+Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $1"_"$2}' | sort -n | uniq) ;
+if [[ "$Ranges" ]];
+then
+for x in $(echo $Ranges ) ; 
+do 
+c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
+d=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $2}');
+e=$(echo  $x | awk -F '_' '{print $1}');
+for R in $(echo  $Ranges ) ; 
+do a=$(echo  $R | awk -F '_' '{print $2}'| awk -F '-' '{print $1}');
+b=$(echo  $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+f=$(echo  $R | awk -F '_' '{print $1}');
+if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
+then 
+Ranges=$(echo $Ranges | sed 's+'$R'++' | sed 's+'$x'+'$e'_'$a'-'$d'+')
+break
+fi
+done
+echo  $x
+echo  $Ranges	
+done 
+fi
+
+
+for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
@@ -57,30 +83,14 @@ e=$(echo $destport | awk -F '-' '{print $1}')
 f=$(echo $destport | awk -F '-' '{print $2}')
 Test='';
 within=0
-rang=0
 if [[ "$Ranges" ]];
 then
 for R in $(echo $Ranges) ; do 
-a=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $1}');
-b=$(echo $R | awk -F '*' '{print $2}' | awk -F '-' '{print $2}');
-c=$(echo $R | awk -F '*' '{print $1}') ;
+a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $R | awk -F '_' '{print $1}') ;
 # echo $a , $b , $c , $e , $f , $protocap
-if  [[ $(echo $x | grep "-") ]] && (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif  [[ $(echo $x | grep "-") ]] && (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif  [[ $(echo $x | grep "-") ]] && (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$x as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
+if [[ ! $(echo $x | grep "-") ]] && (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
 then
 echo Ignore Adding $x as it is within Range $c"_"$a"-"$b;
 within=1 ;
@@ -88,26 +98,72 @@ break
 fi
 done
 fi
-if [[ $(echo $x | grep "-") ]] && (( "$within" == "0" ));
-then
-x=R_$x;
-Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
-newservices=$newservices" "\"/infra/services/$x\", ;
-elif (( "$within" == "0" )) ;
+
+if [[ ! $(echo $x | grep "-") ]] && (( "$within" == "0" )) ;
 then
 Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
 newservices=$newservices" "\"/infra/services/$x\", ;
-fi
 if [[ "$Test" ]];
 then
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $Test  ;
 exit 1
-elif (( "$within" == "0" ))
-then
+else
 echo Service $x is added ;
 fi
+fi
 done
+
+if [[ "$Ranges" ]];
+then
+within=0
+for i in $(echo $Ranges) ; do 
+e=$(echo $i | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+f=$(echo $i | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+protocap=$(echo $i | awk -F '_' '{print $1}')
+for x in $(echo $Ranges) ; do
+a=$(echo $x | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $x | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $x | awk -F '_' '{print $1}') ;
+
+if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+fi
+done
+
+if (( "$within" == "0" ));
+then
+i=R_$i;
+Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$i" -s -d '{"display_name": "'$i'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$i\", ;
+if [[ "$Test" ]];
+then
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $Test  ;
+exit 1
+else
+echo Service $x is added ;
+fi
+fi
+
+done
+fi
+
+
+
 if [ "$services" == "  " ] ; 
 then
 newservices=${newservices:0:-1} ; 
