@@ -76,7 +76,8 @@ fi
 
 
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
-do protocap=$(echo $x | awk -F '_' '{print $1}');
+do 
+protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
 e=$(echo $destport | awk -F '-' '{print $1}')
@@ -85,7 +86,8 @@ Test='';
 within=0
 if [[ "$Ranges" ]];
 then
-for R in $(echo $Ranges) ; do 
+for R in $(echo $Ranges) ; 
+do 
 a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $R | awk -F '_' '{print $1}') ;
@@ -155,7 +157,7 @@ echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m";
 echo -e $Test  ;
 exit 1
 else
-echo Service $x is added ;
+echo Service $i is added ;
 fi
 fi
 
