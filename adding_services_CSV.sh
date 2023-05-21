@@ -49,7 +49,7 @@ echo "==========================================================================
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
 echo "========================================================================================"
-echo -e "\033[1;32mChecking if there are services to be concatinated: \033[0m"
+echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $1"_"$2}' | sort -n | uniq) ;
 if [[ "$Ranges" ]];
@@ -65,7 +65,7 @@ b=$(echo  $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 f=$(echo  $R | awk -F '_' '{print $1}');
 if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
-Ranges=$(echo $Ranges | sed 's+'$R'++' | sed 's+'$x'+'$e'_'$a'-'$d'+')
+Ranges=$(echo $Ranges | sed 's+'$x'++' | sed 's+'$R'+'$e'_'$a'-'$d'+')
 break
 fi
 done
