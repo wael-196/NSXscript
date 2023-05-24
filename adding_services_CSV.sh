@@ -8,7 +8,7 @@ newservices=''
 services=''
 flow=""
 if [[ "$file" ]];
-Then 
+then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
  policy=default-layer3-section
 echo "========================================================================================"
