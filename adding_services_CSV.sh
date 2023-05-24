@@ -7,6 +7,8 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
+if [[ "$file" ]];
+Then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
  policy=default-layer3-section
 echo "========================================================================================"
@@ -185,3 +187,6 @@ echo "==========================================================================
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
 fi
 done 
+else 
+echo "wrong file name, please add a file"
+fi
