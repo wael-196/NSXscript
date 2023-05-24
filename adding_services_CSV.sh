@@ -188,5 +188,5 @@ echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' 
 fi
 done 
 else 
-echo "wrong file name, please add a file"
+echo -e "\033[1;31mWrong file name, please add a file ! \033[0m"; 
 fi
