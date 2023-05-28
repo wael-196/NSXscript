@@ -24,6 +24,8 @@ destport=$(echo $i | awk -F ',' '{print $3}') ;
 # echo "destport=$destport" ;
 for t in $(echo $rule); do flow=$protocap"*"$destport"*"$t"*""\n"$flow ; done 
 done
+echo -e $flow 
+exit 1
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
