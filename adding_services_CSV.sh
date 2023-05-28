@@ -123,6 +123,8 @@ for z in $(echo $Ranges) ; do
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
 protocap=$(echo $z | awk -F '_' '{print $1}')
+destport=$(echo $z | awk -F '_' '{print $2}')
+protosmall=$(echo $protocap | tr [:upper:] [:lower:] )
 for y in $(echo $Ranges) ; do
 a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
@@ -148,16 +150,16 @@ done
 
 if (( "$within" == "0" ));
 then
-i=R_$i;
-Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$i" -s -d '{"display_name": "'$i'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
-newservices=$newservices" "\"/infra/services/$i\", ;
+i=R_$z;
+Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$z" -s -d '{"display_name": "'$z'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$z\", ;
 if [[ "$Test" ]];
 then
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $Test  ;
 exit 1
 else
-echo Service $i is added ;
+echo Service $z is added ;
 fi
 fi
 
