@@ -48,9 +48,6 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-echo "========================================================================================"
-echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
-echo "========================================================================================"
 Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $1"_"$2}' | sort -n | uniq) ;
 if [[ "$Ranges" ]];
 then
@@ -76,7 +73,9 @@ fi
 done
 done 
 fi
-wael=$(echo -e $flow | sed '/^$/d' | grep \*$i\*  | sort -n -r | uniq  | awk -F '*' '{print $1"_"$2}' )
+echo "========================================================================================"
+echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
+echo "========================================================================================"
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
