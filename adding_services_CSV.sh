@@ -150,7 +150,7 @@ done
 
 if (( "$within" == "0" ));
 then
-i=R_$z;
+z=R_$z;
 Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$z" -s -d '{"display_name": "'$z'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
 newservices=$newservices" "\"/infra/services/$z\", ;
 if [[ "$Test" ]];
