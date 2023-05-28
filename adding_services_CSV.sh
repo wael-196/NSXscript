@@ -56,6 +56,7 @@ then
 echo "========================================================================================"
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
+echo found $Ranges
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -68,12 +69,10 @@ f=$(echo  $R | awk -F '_' '{print $1}');
 if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
 Ranges=$(echo $Ranges | sed 's+'$x'++' | sed 's+'$R'+'$e'_'$a'-'$d'+')
-echo concatinating $R and $x
+echo Concatinating $R and $x
 break
 fi
 done
-echo  $x
-echo  $Ranges	
 done 
 fi
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
@@ -174,10 +173,11 @@ fi
 services="\"services\" : [$newservices $services],"
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
+echo $ newjson
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $result  ;
+echo -e $result  ffff ;
 exit 1 ;
 else  
 echo "========================================================================================"
