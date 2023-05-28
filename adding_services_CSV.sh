@@ -68,6 +68,7 @@ f=$(echo  $R | awk -F '_' '{print $1}');
 if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
 Ranges=$(echo $Ranges | sed 's+'$x'++' | sed 's+'$R'+'$e'_'$a'-'$d'+')
+echo concatinating $R and $x
 break
 fi
 done
@@ -75,8 +76,6 @@ echo  $x
 echo  $Ranges	
 done 
 fi
-
-
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
