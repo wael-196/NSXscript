@@ -77,7 +77,6 @@ done
 done 
 fi
 wael=$(echo -e $flow | sed '/^$/d' | grep \*$i\*  | sort -n -r | uniq  | awk -F '*' '{print $1"_"$2}' )
-echo wael $wael 
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do 
 echo $x
@@ -179,11 +178,10 @@ fi
 services="\"services\" : [$newservices $services],"
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
-echo $newjson
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $result  ffff ;
+echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
