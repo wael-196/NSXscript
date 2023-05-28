@@ -79,7 +79,6 @@ fi
 wael=$(echo -e $flow | sed '/^$/d' | grep \*$i\*  | sort -n -r | uniq  | awk -F '*' '{print $1"_"$2}' )
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do 
-echo $x
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
