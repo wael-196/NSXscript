@@ -78,7 +78,6 @@ done
 fi
 wael=$(echo -e $flow | sed '/^$/d' | grep \*$i\*  | sort -n -r | uniq  | awk -F '*' '{print $1"_"$2}' )
 echo wael $wael 
-exit 1
 for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
 do 
 echo $x
