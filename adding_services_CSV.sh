@@ -22,7 +22,7 @@ protocap=$(echo $i | awk -F ',' '{print $2}');
 # echo "protocap=$protocap" ;
 destport=$(echo $i | awk -F ',' '{print $3}') ; 
 # echo "destport=$destport" ;
-for i in $(echo $rule); do flow=$protocap"*"$destport"*"$i"*""\n"$flow ; done 
+for t in $(echo $rule); do flow=$protocap"*"$destport"*"$t"*""\n"$flow ; done 
 done
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
@@ -119,28 +119,28 @@ done
 if [[ "$Ranges" ]];
 then
 within=0
-for i in $(echo $Ranges) ; do 
-e=$(echo $i | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
-f=$(echo $i | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
-protocap=$(echo $i | awk -F '_' '{print $1}')
-for x in $(echo $Ranges) ; do
-a=$(echo $x | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
-b=$(echo $x | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
-c=$(echo $x | awk -F '_' '{print $1}') ;
+for z in $(echo $Ranges) ; do 
+e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+protocap=$(echo $z | awk -F '_' '{print $1}')
+for y in $(echo $Ranges) ; do
+a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $y | awk -F '_' '{print $1}') ;
 
 if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
-echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
 break
 elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
-echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
 break
 elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
-echo Ignore Adding R_$i as it is within Range $c"_"$a"-"$b;
+echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
 break
 fi
