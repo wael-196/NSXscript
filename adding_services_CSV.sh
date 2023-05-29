@@ -66,6 +66,7 @@ b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 if (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
 then 
+echo $e $f $a $b
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
 done
