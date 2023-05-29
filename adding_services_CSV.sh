@@ -63,7 +63,7 @@ for y in $(echo $Ranges) ; do
 a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
-if [[ "$z"!="$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
 then 
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
