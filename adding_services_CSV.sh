@@ -56,7 +56,6 @@ echo "==========================================================================
 echo Ranges found $Ranges
 for x in $(echo $Ranges ) ; 
 do 
-echo Ranges found $Ranges
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
 d=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $2}');
 e=$(echo  $x | awk -F '_' '{print $1}');
