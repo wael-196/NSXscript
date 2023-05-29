@@ -25,7 +25,7 @@ destport=$(echo $i | awk -F ',' '{print $3}') ;
 for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
 done
 
-echo -e $flow | sed '/^$/d' | grep \*INTEGR_APP_TO_INTRA\* | awk -F '*' '{print $2"_"$1}' | sort -n | uniq
+echo -e $flow | sed '/^$/d' | sort -n -u | grep \*INTEGR_APP_TO_INTRA\* | awk -F '*' '{print $2"_"$1}' 
 
 exit 1
 
