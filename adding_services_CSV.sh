@@ -66,7 +66,7 @@ f=$(echo  $R | awk -F '_' '{print $1}');
 if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
 Ranges=$(echo $Ranges | sed 's+'$x' + +' | sed 's+'$R' +'$e'_'$a'-'$d' +')
-echo Concatinating $R and $x
+echo Concatinating $R and $x to $e'_'$a'-'$d
 break
 fi
 done
@@ -162,12 +162,8 @@ else
 echo Service $z is added ;
 fi
 fi
-
 done
 fi
-
-
-
 if [ "$services" == "  " ] ; 
 then
 newservices=${newservices:0:-1} ; 
