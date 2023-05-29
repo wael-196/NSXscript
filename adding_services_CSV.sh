@@ -149,24 +149,13 @@ a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 
-if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+if  (( "$f" <= "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
 echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
 break
 fi
 done
-
 if (( "$within" == "0" ));
 then
 z=R_$z;
