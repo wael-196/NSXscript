@@ -22,7 +22,7 @@ protocap=$(echo $i | awk -F ',' '{print $2}');
 # echo "protocap=$protocap" ;
 destport=$(echo $i | awk -F ',' '{print $3}') ; 
 # echo "destport=$destport" ;
-for t in $(echo $rule); do flow=$protocap"*"$destport"*"$t"*""\n"$flow ; done 
+for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
 done
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
@@ -47,7 +47,7 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $1"_"$2}' | sort -n | uniq) ;
+Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $2"_"$1}' | sort -n | uniq) ;
 if [[ "$Ranges" ]];
 then
 echo "========================================================================================"
@@ -76,7 +76,7 @@ echo new Ranges $Ranges
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
-for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $1"_"$2}' | sort -n | uniq ) ; 
+for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $2"_"$1}' | sort -n | uniq ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
@@ -169,8 +169,8 @@ if [ "$services" == "  " ] ;
 then
 newservices=${newservices:0:-1} ; 
 fi
-#services="\"services\" : [$newservices $services],"
-services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
+services="\"services\" : [$newservices $services],"
+#services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
