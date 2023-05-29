@@ -59,15 +59,21 @@ for z in $(echo $Ranges) ; do
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
 protocap=$(echo $z | awk -F '_' '{print $1}')
-echo $Ranges
 for y in $(echo $Ranges) ; do
 a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
-if (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
-echo $e $f $a $b
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+break
+elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+break
 fi
 done
 done
@@ -151,13 +157,24 @@ a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 
-if  (( "$f" <= "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
+within=1 ;
+break
+elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
 echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
 break
 fi
 done
+
 if (( "$within" == "0" ));
 then
 z=R_$z;
