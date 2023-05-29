@@ -118,9 +118,8 @@ done
 
 if [[ "$Ranges" ]];
 then
-echo new ranges $Ranges
-within=0
 for z in $(echo $Ranges) ; do 
+within=0
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
 protocap=$(echo $z | awk -F '_' '{print $1}')
