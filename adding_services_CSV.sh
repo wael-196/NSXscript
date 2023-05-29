@@ -54,6 +54,22 @@ echo "==========================================================================
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 echo Ranges found $Ranges
+
+for z in $(echo $Ranges) ; do 
+e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+protocap=$(echo $z | awk -F '_' '{print $1}')
+for y in $(echo $Ranges) ; do
+a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $y | awk -F '_' '{print $1}') ;
+if (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+then 
+Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+fi
+done
+done
+
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -96,7 +112,7 @@ c=$(echo $R | awk -F '_' '{print $1}') ;
 # echo $a , $b , $c , $e , $f , $protocap
 if [[ ! $(echo $x | grep "-") ]]  && (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
 then
-echo Ignore Adding $x as it is within Range $c"_"$a"-"$b;
+echo Ignore Adding $x as it is within Range R_$c"_"$a"-"$b;
 within=1 ;
 break
 fi
