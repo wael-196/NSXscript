@@ -47,7 +47,7 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n -u | awk -F '*' '{print $2"_"$1}' ) ;
+Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n  | awk -F '*' '{print $2"_"$1}' ) ;
 if [[ "$Ranges" ]];
 then
 echo "========================================================================================"
