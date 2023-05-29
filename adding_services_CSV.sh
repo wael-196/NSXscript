@@ -59,6 +59,7 @@ for z in $(echo $Ranges) ; do
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
 protocap=$(echo $z | awk -F '_' '{print $1}')
+echo $Ranges
 for y in $(echo $Ranges) ; do
 a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
