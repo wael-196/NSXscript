@@ -24,17 +24,12 @@ destport=$(echo $i | awk -F ',' '{print $3}') ;
 # echo "destport=$destport" ;
 for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
 done
-
-echo -e $flow | sed '/^$/d' | grep \*INTEGR_APP_TO_INTRA\* | sort -n -u | awk -F '*' '{print $2"_"$1}' 
-
-exit 1
-
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
-echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -n | uniq
+echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -u 
 
-for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -n | uniq ); 
+for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -u  ); 
 do echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
@@ -52,7 +47,7 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | awk -F '*' '{print $2"_"$1}' | sort -n | uniq) ;
+Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n -u | awk -F '*' '{print $2"_"$1}' ) ;
 if [[ "$Ranges" ]];
 then
 echo "========================================================================================"
@@ -81,7 +76,7 @@ echo new Ranges $Ranges
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
-for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | awk -F '*' '{print $2"_"$1}' | sort -n | uniq ) ; 
+for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | sort -n -u | awk -F '*' '{print $2"_"$1}'  ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
