@@ -81,19 +81,18 @@ do
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
-e=$(echo $destport | awk -F '-' '{print $1}')
-f=$(echo $destport | awk -F '-' '{print $2}')
 Test='';
 within=0
 if [[ "$Ranges" ]];
 then
+firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
 for R in $(echo $Ranges) ; 
 do 
 a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $R | awk -F '_' '{print $1}') ;
 # echo $a , $b , $c , $e , $f , $protocap
-if [[ ! $(echo $x | grep "-") ]] && (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
+if [[ ! $(echo $x | grep "-") ]] && (( "$destport" >= "$firstnum" )) && (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
 then
 echo Ignore Adding $x as it is within Range $c"_"$a"-"$b;
 within=1 ;
