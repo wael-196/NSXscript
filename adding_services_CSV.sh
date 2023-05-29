@@ -118,7 +118,7 @@ done
 
 if [[ "$Ranges" ]];
 then
-echo new Ranges $Range
+echo new Ranges $Ranges
 for z in $(echo $Ranges) ; do 
 within=0
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
