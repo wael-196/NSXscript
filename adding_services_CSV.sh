@@ -69,11 +69,9 @@ Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
-break
 elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
 then 
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
-break
 fi
 done
 done
