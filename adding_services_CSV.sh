@@ -27,9 +27,9 @@ done
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
-echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -u 
+echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
 
-for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort -u  ); 
+for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq  ); 
 do echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
@@ -76,7 +76,7 @@ fi
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
-for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | sort -n -u | awk -F '*' '{print $2"_"$1}'  ) ; 
+for x in $(echo -e $flow | sed '/^$/d' | grep \*$i\* | sort -n  | uniq  | awk -F '*' '{print $2"_"$1}'  ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
