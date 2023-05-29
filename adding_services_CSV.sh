@@ -66,7 +66,7 @@ b=$(echo  $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 f=$(echo  $R | awk -F '_' '{print $1}');
 if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
-Ranges=$(echo $Ranges | sed 's+'$x'+ +' | sed 's+'$R' +'$e'_'$a'-'$d'+')
+Ranges=$(echo $Ranges | sed 's+'$x'++' | sed 's+'$R'+'$e'_'$a'-'$d'+')
 echo Concatinating $R and $x to $e'_'$a'-'$d
 break
 fi
