@@ -138,12 +138,8 @@ done
 fi
 fi
 
-if (( "$within" == "0" )) ;
+if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
 then
-if [[ $(echo $destport | grep "-") ]]
-then 
-x=R_$x
-fi
 Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
 newservices=$newservices" "\"/infra/services/$x\", ;
 if [[ "$Test" ]];
@@ -154,6 +150,24 @@ exit 1
 else
 echo Service $x is added ;
 fi
+fi
+done
+
+for x in $(echo $Ranges) ; 
+do 
+protocap=$(echo $x | awk -F '_' '{print $1}');
+protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
+destport=$(echo $x | awk -F '_' '{print $2}');
+x=R_$x
+Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$x\", ;
+if [[ "$Test" ]];
+then
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $Test  ;
+exit 1
+else
+echo Service $x is added ;
 fi
 done
 
