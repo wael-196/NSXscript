@@ -65,7 +65,7 @@ b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
 then 
-echo removing $z as it is within range $y
+echo Removing $z as it is within range $y
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
 done
@@ -87,7 +87,7 @@ break
 fi
 done
 done 
-echo new Ranges $Ranges
+echo New Ranges $Ranges
 fi
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
