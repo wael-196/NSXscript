@@ -70,6 +70,7 @@ Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
 done
 done
+
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -87,8 +88,26 @@ break
 fi
 done
 done 
+
+for z in $(echo $Ranges) ; do 
+e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+protocap=$(echo $z | awk -F '_' '{print $1}')
+for y in $(echo $Ranges) ; do
+a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+c=$(echo $y | awk -F '_' '{print $1}') ;
+if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Removing $z as it is within range $y
+Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+fi
+done
+done
+
 echo New Ranges $Ranges
 fi
+
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
@@ -102,15 +121,14 @@ within=0
 if [[ "$Ranges" ]];
 then
 firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-if (( "$destport" >= "$firstnum" ))
+if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
 then
 for R in $(echo $Ranges) ; 
 do 
 a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $R | awk -F '_' '{print $1}') ;
-# echo $a , $b , $c , $e , $f , $protocap
-if [[ ! $(echo $x | grep "-") ]]  && (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
+if (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]];
 then
 echo Ignore Adding $x as it is within Range R_$c"_"$a"-"$b;
 within=1 ;
@@ -120,8 +138,12 @@ done
 fi
 fi
 
-if [[ ! $(echo $x | grep "-") ]] && (( "$within" == "0" )) ;
+if (( "$within" == "0" )) ;
 then
+if [[ $(echo $destport | grep "-") ]]
+then 
+x=R_$x
+fi
 Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
 newservices=$newservices" "\"/infra/services/$x\", ;
 if [[ "$Test" ]];
@@ -135,44 +157,6 @@ fi
 fi
 done
 
-if [[ "$Ranges" ]];
-then
-for z in $(echo $Ranges) ; do 
-within=0
-e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
-f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
-protocap=$(echo $z | awk -F '_' '{print $1}')
-destport=$(echo $z | awk -F '_' '{print $2}')
-protosmall=$(echo $protocap | tr [:upper:] [:lower:] )
-for y in $(echo $Ranges) ; do
-a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
-b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
-c=$(echo $y | awk -F '_' '{print $1}') ;
-
-if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) &&  (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-fi
-done
-
-if (( "$within" == "0" ));
-then
-z=R_$z;
-Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$z" -s -d '{"display_name": "'$z'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
-newservices=$newservices" "\"/infra/services/$z\", ;
-if [[ "$Test" ]];
-then
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $Test  ;
-exit 1
-else
-echo Service $z is added ;
-fi
-fi
-done
-fi
 if [ "$services" == "  " ] ; 
 then
 newservices=${newservices:0:-1} ; 
