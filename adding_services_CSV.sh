@@ -175,7 +175,7 @@ if [ "$services" == "  " ] ;
 then
 newservices=${newservices:0:-1} ; 
 fi
-services_number=echo"$newservices $services"
+services_number=echo "$newservices $services" | tr ' ' '\n' 
 echo $services_number
 services="\"services\" : [$newservices $services],"
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
