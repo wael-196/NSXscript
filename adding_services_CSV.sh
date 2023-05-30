@@ -177,10 +177,17 @@ newservices=${newservices:0:-1} ;
 fi
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
 echo $services_number
-services="\"services\" : [$newservices $services],"
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= 120 ))
 then
+services="\"services\" : [$newservices $services],"
+else
+echo -e "\033[1;31mNumber of services has exceeded maximum size 128 \033[0m";
+first120=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | head -n 120)
+lastservices_count=$(( $services_number-120 ))
+lastservices=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
+services="\"services\" : [$first120],"
+fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
@@ -193,15 +200,6 @@ echo "==========================================================================
 echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
-fi
-else
-echo -e "\033[1;31mNumber of services has exceeded maximum size 128 \033[0m";
-first120=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | head -n 120)
-lastservices_count=$(( $services_number-120 ))
-lastservices=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
-echo $first120
-echo jdjdjd
-echo $lastservices
 fi
 done 
 else 
