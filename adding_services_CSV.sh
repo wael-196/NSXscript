@@ -65,10 +65,10 @@ b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
 then 
+echo removing $z as it is within range $y
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
 done
-echo $Ranges
 done
 for x in $(echo $Ranges ) ; 
 do 
@@ -149,17 +149,7 @@ a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 c=$(echo $y | awk -F '_' '{print $1}') ;
 
-if  (( "$f" < "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif (( "$f" <= "$b")) && (( "$e" > "$a")) && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
-within=1 ;
-break
-elif (( "$f" < "$b")) && (( "$e" >= "$a")) && [[ "$c" == "$protocap" ]] ; 
+if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) &&  (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
 then 
 echo Ignore Adding R_$z as it is within Range $c"_"$a"-"$b;
 within=1 ;
