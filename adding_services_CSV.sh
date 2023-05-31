@@ -175,18 +175,17 @@ echo Service $x is added ;
 fi
 done
 
-if [ "$services" == "  " ] ; 
-then
-newservices=${newservices:0:-1} ; 
-fi
-
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
+
 echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
+
+total_service=$(echo $newservices $services | sed 's/,//' | sed 's/ /, /' )
 services="\"services\" : [$newservices $services],"
-echo $services
+echo $total_service
+exit 1
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
