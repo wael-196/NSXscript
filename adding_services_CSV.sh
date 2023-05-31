@@ -7,7 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
-max_num=27
+max_num=120
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
