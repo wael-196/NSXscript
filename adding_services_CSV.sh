@@ -177,13 +177,13 @@ fi
 done
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
 echo $services_number
-services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
+# services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
 yy=$newservices" "$services
 # echo $yy jjdjd
 total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
-# services="\"services\" : [$total_service],"
+services="\"services\" : [$total_service],"
 echo $total_service
 # exit 1
 else
