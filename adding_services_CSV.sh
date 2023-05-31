@@ -7,6 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
+max_num=2
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -177,7 +178,7 @@ if [ "$services" == "  " ] ;
 then
 newservices=${newservices:0:-1} ; 
 fi
-max_num=2
+
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
 echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
@@ -186,14 +187,14 @@ then
 services="\"services\" : [$newservices $services],"
 echo $services
 else
-echo -e "\033[1;31mNumber of services has exceeded maximum size 128 \033[0m";
-first120=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $max_num)
-echo $first120
+echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
+first120=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $max_num)
+first120=${first120:0:-1}
+echo $first120
 lastservices=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
 echo $lastservices
-echo -e $lastservices
-services="\"services\" : [$newservices $services],"
+services="\"services\" : [ $first120 ],"
 fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 echo $newjson
