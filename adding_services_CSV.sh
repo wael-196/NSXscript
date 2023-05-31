@@ -183,11 +183,11 @@ echo $services_number
 if (( "$services_number" <= "$max_num" ))
 then
 yy=$newservices" "$services
-echo $yy jjdjd
+# echo $yy jjdjd
 total_service=$(echo $yy | sed 's/,//' | sed 's/ /, /' )
-services="\"services\" : [$newservices $services],"
+services="\"services\" : [$total_service],"
 echo $total_service
-exit 1
+# exit 1
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
