@@ -186,12 +186,12 @@ services="\"services\" : [$newservices $services],"
 echo $services
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size 128 \033[0m";
-first120="$newservices $services"
-echo $first120
-lastservices_count=$(( $services_number-120 ))
-lastservices=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
-echo -e $lastservices
-services="\"services\" : [ $lastservices ],"
+# first120="$newservices $services"
+# echo $first120
+# lastservices_count=$(( $services_number-120 ))
+# lastservices=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
+# echo -e $lastservices
+services="\"services\" : [$newservices $services],"
 fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 echo $newjson
