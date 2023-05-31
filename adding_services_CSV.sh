@@ -194,7 +194,7 @@ first120=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '
 echo $first120
 lastservices=$(echo -e "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count )
 echo $lastservices
-services="\"services\" : [ $newservices $services ],"
+services="\"services\" : [ $first120 ],"
 echo -e $services
 fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
