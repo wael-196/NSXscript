@@ -175,12 +175,12 @@ fi
 done
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e $services_number
-# services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
 yy=$newservices" "$services
 total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [$total_service],"
+# services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
