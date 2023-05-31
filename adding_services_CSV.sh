@@ -173,8 +173,8 @@ else
 echo Service $x is added ;
 fi
 done
-services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | grep infra | wc -l ) 
-echo $services_number
+services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | grep infra ) 
+echo -e $services_number
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
