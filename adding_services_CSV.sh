@@ -49,7 +49,6 @@ echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\
 echo "========================================================================================" ;
 services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
 echo -e $services | sed 's+/infra/services/++g'
-echo -e $services
 fi
 newservices='';
 Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n | uniq |  awk -F '*' '{print $2"_"$1}' ) ;
