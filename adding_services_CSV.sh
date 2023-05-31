@@ -74,7 +74,6 @@ Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
 fi
 done
 done
-
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -174,7 +173,7 @@ else
 echo Service $x is added ;
 fi
 done
-services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
+services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | grep infra | wc -l ) 
 echo $services_number
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
