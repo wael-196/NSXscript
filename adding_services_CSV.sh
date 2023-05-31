@@ -42,7 +42,6 @@ if [[ -z $(echo $services | grep "\"services\" :" ) ]] ;
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $services  ;
-exit 1 ;
 else  
 echo "========================================================================================" ;
 echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
