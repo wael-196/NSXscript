@@ -30,7 +30,9 @@ echo "==========================================================================
 echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
 
 for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq  ); 
-do echo "========================================================================================" ;
+do if [[ "$i" == "INTEGR_INTRA_TO_APP" ]]
+then
+echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
 services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s )
@@ -184,8 +186,8 @@ services="\"services\" : [$newservices $services],"
 echo $services
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size 128 \033[0m";
-first120=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | head -n 120 | tr '\n' ' ')
-first120=${first120:0:-1} 
+first120=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | head -n 120 | wc -l)
+echo $first120
 lastservices_count=$(( $services_number-120 ))
 lastservices=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | tail -n $lastservices_count | tr '\n' ' ' )
 services="\"services\" : [ $first120 ],"
@@ -203,6 +205,7 @@ echo "==========================================================================
 echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
+fi
 fi
 done 
 else 
