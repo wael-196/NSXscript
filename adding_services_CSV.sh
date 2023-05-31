@@ -182,7 +182,7 @@ echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
-yy=$newservices $services
+yy=$newservices" "$services
 echo $yy jjdjd
 total_service=$(echo $yy | sed 's/,//' | sed 's/ /, /' )
 services="\"services\" : [$newservices $services],"
