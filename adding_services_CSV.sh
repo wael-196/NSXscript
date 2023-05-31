@@ -177,7 +177,7 @@ fi
 done
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
 echo $services_number
-#services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
+services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
 yy=$newservices" "$services
