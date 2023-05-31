@@ -183,7 +183,7 @@ then
 yy=$newservices" "$services
 # echo $yy jjdjd
 total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
-services="\"services\" : [$total_service],"
+# services="\"services\" : [$total_service],"
 echo $total_service
 # exit 1
 else
