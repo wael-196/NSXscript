@@ -192,10 +192,7 @@ lastservices_count=$(( $services_number-$max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//' | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $max_num |  tr '\n' ' ' )
 echo $first120
 lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $lastservices_count |  tr '\n' ' ' )
-echo $lastservices
-services="\"services\" : [ $lastservices ],"
-first120=${first120:0:-1}
-
+services="\"services\" : [ $first120 ],"
 fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
