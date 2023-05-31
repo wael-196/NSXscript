@@ -7,7 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
-max_num=2
+max_num=120
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -31,8 +31,7 @@ echo "==========================================================================
 echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
 
 for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq  ); 
-do if [[ "$i" == "APP_TO_INET" ]]
-then
+do 
 echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
@@ -208,7 +207,6 @@ echo "==========================================================================
 echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
-fi
 fi
 done 
 else 
