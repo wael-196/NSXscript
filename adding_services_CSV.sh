@@ -42,6 +42,7 @@ if [[ -z $(echo $services | grep "\"services\" :" ) ]] ;
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $services  ;
+exit 1 ;
 else  
 echo "========================================================================================" ;
 echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
@@ -181,7 +182,9 @@ echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
-total_service=$(echo "$newservices $services" | sed 's/,//' | sed 's/ /, /' )
+yy=$newservices $services
+echo $yy jjdjd
+total_service=$(echo $yy | sed 's/,//' | sed 's/ /, /' )
 services="\"services\" : [$newservices $services],"
 echo $total_service
 exit 1
