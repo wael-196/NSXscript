@@ -47,11 +47,9 @@ else
 echo "========================================================================================" ;
 echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
 echo "========================================================================================" ;
-# services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
-# echo -e $services | sed 's+/infra/services/++g'
-services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}')
+services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
+echo -e $services | sed 's+/infra/services/++g'
 echo -e $services
-exit 1
 fi
 newservices='';
 Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n | uniq |  awk -F '*' '{print $2"_"$1}' ) ;
@@ -184,7 +182,7 @@ echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
 then
-total_service=$(echo $newservices $services | sed 's/,//' | sed 's/ /, /' )
+total_service=$(echo "$newservices $services" | sed 's/,//' | sed 's/ /, /' )
 services="\"services\" : [$newservices $services],"
 echo $total_service
 exit 1
