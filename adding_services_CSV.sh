@@ -7,7 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
-max_num=120
+max_num=10
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -175,9 +175,7 @@ else
 echo Service $x is added ;
 fi
 done
-
 services_number=$(echo "$newservices $services" | tr ' ' '\n' |  sort | uniq | sed '/^$/d' | wc -l ) 
-
 echo $services_number
 #services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 if (( "$services_number" <= "$max_num" ))
@@ -191,7 +189,7 @@ echo $total_service
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
-first120=$(echo -e "$newservices $services" | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $max_num |  tr '\n' ' ' )
+first120=$(echo -e "$newservices $services" | sed 's/,//' | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $max_num |  tr '\n' ' ' )
 echo $first120
 lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $lastservices_count |  tr '\n' ' ' )
 echo $lastservices
