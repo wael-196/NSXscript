@@ -193,12 +193,9 @@ first120=$(echo -e "$newservices $services" | tr ' ' '\n' | sort | uniq | tr '\n
 first120=${first120:0:-1}
 echo $first120
 lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | tr '\n' ' ' | sed '/^$/d' | tail -n $lastservices_count )
-echo $lastservices
 services="\"services\" : [ $first120 ],"
-echo -e $services
 fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
-echo $newjson
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
