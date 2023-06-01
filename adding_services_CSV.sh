@@ -196,7 +196,7 @@ read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $last
 new_rule="${input:-$new_rule}"
 new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"sequence_number\": 1, \"source_groups\" : [ \"ANY\" ], \"destination_groups\" : [ \"ANY\" ], \"logged\" : false, $services \"scope\" : [ \"ANY\" ]}"
 # echo $new_rule_body
-curl -u $user:$password -k -X PATCH https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" 
+result=$(curl -u $user:$password -k -X PATCH https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" )
 services="\"services\" : [ $first120 ],"
 if [[ $(echo $result ) ]] #fdfdf 
 then 
