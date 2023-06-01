@@ -192,7 +192,7 @@ first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
 lastservices=${lastservices:0:-2}
 echo $lastservices
-services="\"services\" : [ $lastservices ],"
+services="\"services\" : [ $first120 ],"
 fi
 
 
