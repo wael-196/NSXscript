@@ -193,7 +193,8 @@ lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | s
 lastservices=${lastservices:0:-2}
 echo $lastservices
 services="\"services\" : [ $first120 ],"
-read -e -i "$policy" -p "Please enter the new rule name to add the remaining $lastservices_count services" input
+read -e -i "$new_rule" -p "Please enter the new rule name to add the remaining $lastservices_count services" input
+new_rule="${input:-$new_rule}"
 fi
 
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
