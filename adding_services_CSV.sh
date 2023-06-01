@@ -184,7 +184,7 @@ total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [$total_service],"
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 else
-echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num, adding first 120 services \033[0m";
+echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
 first120=${first120:0:-2}
@@ -192,7 +192,7 @@ lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | s
 lastservices=${lastservices:0:-2}
 # echo $lastservices
 services="\"services\" : [ $lastservices ],"
-read -e -i "$new_rule" -p "Please enter the new rule name to add the remaining $lastservices_count services : " input
+read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $lastservices_count services : " input
 new_rule="${input:-$new_rule}"
 new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"sequence_number\": 1, \"source_groups\" : [ \"ANY\" ], \"destination_groups\" : [ \"ANY\" ], \"logged\" : false, $services \"scope\" : [ \"ANY\" ]}"
 # echo $new_rule_body
