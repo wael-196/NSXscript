@@ -188,6 +188,7 @@ else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
+first120=${first120:0:-1}
 echo $first120
 lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | grep infra | head -n $lastservices_count |  tr '\n' ' ' )
 services="\"services\" : [ $first120 ],"
