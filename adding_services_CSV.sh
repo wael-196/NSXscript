@@ -175,6 +175,9 @@ fi
 done
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e $services_number
+
+
+
 if (( "$services_number" <= "$max_num" ))
 then
 yy=$newservices" "$services
@@ -184,13 +187,19 @@ services="\"services\" : [$total_service],"
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
-first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
-# echo $first120
-lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | sed '/^$/d' | head -n $lastservices_count |  tr '\n' ' ' )
+first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
+echo $first120
+lastservices=$(echo -e "$newservices $services"  | tr ' ' '\n' | sort | uniq | grep infra | head -n $lastservices_count |  tr '\n' ' ' )
 services="\"services\" : [ $first120 ],"
 fi
+
+
+
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
+
+
+
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
@@ -202,8 +211,13 @@ echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
 fi
+
+
+
 fi
+
 done 
+
 else 
 echo -e "\033[1;31mWrong file name, please add a file ! \033[0m"; 
 fi
