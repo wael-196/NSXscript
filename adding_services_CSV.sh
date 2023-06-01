@@ -193,7 +193,7 @@ lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | s
 lastservices=${lastservices:0:-2}
 echo $lastservices
 services="\"services\" : [ $first120 ],"
-read -e -i "$new_rule" -p "Please enter the new rule name to add the remaining $lastservices_count services" input
+read -e -i "$new_rule" -p "\033[1;31mPlease enter the new rule name to add the remaining $lastservices_count services : \033[0m" input
 new_rule="${input:-$new_rule}"
 fi
 
