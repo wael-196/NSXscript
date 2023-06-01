@@ -197,7 +197,7 @@ new_rule="${input:-$new_rule}"
 new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"sequence_number\": 1, \"source_groups\" : [ \"ANY\" ], \"destination_groups\" : [ \"ANY\" ], \"logged\" : false, $services \"scope\" : [ \"ANY\" ]}"
 echo $new_rule_body
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" )
-
+services="\"services\" : [ $first120 ],"
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
