@@ -184,18 +184,19 @@ total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [$total_service],"
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 else
-echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num adding, first 120 services \033[0m";
+echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num, fffadding first 120 services \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
 lastservices=${lastservices:0:-2}
 # echo $lastservices
-services="\"services\" : [ $first120 ],"
+services="\"services\" : [ $lastservices ],"
 read -e -i "$new_rule" -p "Please enter the new rule name to add the remaining $lastservices_count services : " input
 new_rule="${input:-$new_rule}"
+new_rule_body="{"action" : "ALLOW","display_name": "$new_rule","sequence_number": 1,"source_groups" : [ "ANY" ],"destination_groups" : [ "ANY" ],"logged" : false, $services "scope" : [ "ANY" ]}"
+echo $new_rule_body
 fi
-
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 
