@@ -198,7 +198,7 @@ new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"seque
 # echo $new_rule_body
 curl -u $user:$password -k -X PATCH https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" 
 services="\"services\" : [ $first120 ],"
-if [[ $(echo $result ) ]]  
+if [[ $(echo $result ) ]] #fdfdf 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $result  ;
