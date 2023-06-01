@@ -191,9 +191,9 @@ first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort 
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
 lastservices=${lastservices:0:-2}
-echo $lastservices
+# echo $lastservices
 services="\"services\" : [ $first120 ],"
-read -e -i "$new_rule" -p "\033[1;31mPlease enter the new rule name to add the remaining $lastservices_count services : \033[0m" input
+read -e -i "$new_rule" -p "Please enter the new rule name to add the remaining $lastservices_count services : " input
 new_rule="${input:-$new_rule}"
 fi
 
