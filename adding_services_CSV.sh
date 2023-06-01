@@ -7,7 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
-max_num=4
+max_num=2
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -190,8 +190,8 @@ lastservices_count=$(( $services_number-$max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
-echo $lastservices
 lastservices=${lastservices:0:-2}
+echo $lastservices
 services="\"services\" : [ $lastservices ],"
 fi
 
