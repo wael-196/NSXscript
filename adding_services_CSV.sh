@@ -13,19 +13,19 @@ if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
 policy=default-layer3-section
-echo "========================================================================================"
-echo -e "Processing flow of policy $policy and removing duplicates: "
-echo "========================================================================================"
-for i in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep  CATCH_*  | sed 's/ //g' | sed 's/"//g' | sort | uniq  );
-do rule=$(echo $i | awk  -F ',' '{for(i=3; i<=NF; i++) {print $i}}' | grep  CATCH_* | sed 's/CATCH_//g');
-echo $i
-# echo "rule=$rule" ;
-protocap=$(echo $i | awk -F ',' '{print $2}');
-# echo "protocap=$protocap" ;
-destport=$(echo $i | awk -F ',' '{print $3}') ; 
-# echo "destport=$destport" ;
-for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
-done
+# echo "========================================================================================"
+# echo -e "Processing flow of policy $policy and removing duplicates: "
+# echo "========================================================================================"
+# for i in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep  CATCH_*  | sed 's/ //g' | sed 's/"//g' | sort | uniq  );
+# do rule=$(echo $i | awk  -F ',' '{for(i=3; i<=NF; i++) {print $i}}' | grep  CATCH_* | sed 's/CATCH_//g');
+# echo $i
+# # echo "rule=$rule" ;
+# protocap=$(echo $i | awk -F ',' '{print $2}');
+# # echo "protocap=$protocap" ;
+# destport=$(echo $i | awk -F ',' '{print $3}') ; 
+# # echo "destport=$destport" ;
+# for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
+# done
 # exit 1
 # echo "========================================================================================" ;
 # echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
