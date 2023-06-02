@@ -32,7 +32,7 @@ policy=default-layer3-section
 # echo "========================================================================================" ;
 # echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
 
-for i in $(echo $rule_list ); 
+for i in $(echo $rule_list |  sed 's/CATCH_//g' ); 
 do 
 # if [[ "$i" == "INTEGR_APP_TO_INTRA" ]]
 # then
