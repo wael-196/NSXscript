@@ -8,6 +8,7 @@ newservices=''
 services=''
 flow=""
 max_num=128
+rule_list=",CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_INTRA_TO_APP"
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -25,13 +26,13 @@ destport=$(echo $i | awk -F ',' '{print $3}') ;
 # echo "destport=$destport" ;
 for t in $(echo $rule); do flow=$destport"*"$protocap"*"$t"*""\n"$flow ; done 
 done
-exit 1
-echo "========================================================================================" ;
-echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
-echo "========================================================================================" ;
-echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
+# exit 1
+# echo "========================================================================================" ;
+# echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
+# echo "========================================================================================" ;
+# echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq 
 
-for i in $(echo -e $flow | sed '/^$/d' | awk -F '*' '{print $3}' | sort | uniq  ); 
+for i in $(echo $rule_list ); 
 do 
 # if [[ "$i" == "INTEGR_APP_TO_INTRA" ]]
 # then
@@ -52,14 +53,14 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-Ranges=$(echo -e $flow | sed '/^$/d' | grep \*$i\* | grep "[0-9]-[0-9]" | sort -n | uniq |  awk -F '*' '{print $2"_"$1}' ) ;
+Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep ,$i,  | sed 's/ //g' | sed 's/"//g'  | grep "[0-9]-[0-9]" |  awk -F ',' '{print $2"_"$1}' | sort -n | uniq  |  awk -F ',' '{print $1"_"$2}' ) ;
 if [[ "$Ranges" ]];
 then
 echo "========================================================================================"
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 echo Ranges found $Ranges
-
+exit 1
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
