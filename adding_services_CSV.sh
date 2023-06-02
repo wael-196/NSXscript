@@ -8,7 +8,7 @@ newservices=''
 services=''
 flow=""
 max_num=128
-rule_list=",CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_INTRA_TO_APP"
+rule_list="CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_INTRA_TO_APP"
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
