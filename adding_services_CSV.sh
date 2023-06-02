@@ -11,7 +11,7 @@ max_num=128
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
- policy=default-layer3-section
+policy=default-layer3-section
 echo "========================================================================================"
 echo -e "Processing flow of policy $policy and removing duplicates: "
 echo "========================================================================================"
