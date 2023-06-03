@@ -15,7 +15,7 @@ policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
 policy=default-layer3-section
 non_zero_list=''
 for i in $(echo $rule_list )
-do if [[ $(grep -w $i $file) ]]; then non_zero_list="$non_zero_list $i"
+do if [[ $(grep -w $i $file) ]]; then non_zero_list="$non_zero_list $i" ; fi
 done 
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
