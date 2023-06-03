@@ -53,7 +53,6 @@ echo "==========================================================================
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 echo Ranges found $Ranges
-exit 1
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
