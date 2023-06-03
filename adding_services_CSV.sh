@@ -20,7 +20,7 @@ done
 echo "========================================================================================" ;
 echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
-echo -e non_zero_list | sed 's/CATCH_//g' | tr ' ' '\n'
+echo -e $non_zero_list | sed 's/CATCH_//g' | tr ' ' '\n'
 
 
 for i in $(echo $non_zero_list |  sed 's/CATCH_//g' ); 
