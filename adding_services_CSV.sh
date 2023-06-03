@@ -204,26 +204,18 @@ read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $last
 new_rule="${input:-$new_rule}"
 new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"sequence_number\": 1, \"source_groups\" : [ \"ANY\" ], \"destination_groups\" : [ \"ANY\" ], \"logged\" : false, $services \"scope\" : [ \"ANY\" ]}"
 # echo $new_rule_body
-result=$(curl -u $user:$password -k -X PATCH https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" )
+result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" )
 services="\"services\" : [ $first120 ],"
-if [[ $(echo $result ) ]] #fdfdf 
+if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $result  ;
 exit 1 ;
 else  
-result=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s  --header "Content-Type: application/json" )
-if [[ $(echo $result | grep "\"services\" :" ) ]] ; 
-then 
 echo "========================================================================================"
 echo -e "\033[1;32mNew services associated with rule $new_rule : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
-else
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $result  ;
-exit 1 ;
-fi
 fi
 
 fi
