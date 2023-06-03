@@ -25,8 +25,6 @@ echo -e non_zero_list | sed 's/CATCH_//g' | tr ' ' '\n'
 
 for i in $(echo $non_zero_list |  sed 's/CATCH_//g' ); 
 do 
-# if [[ "$i" == "INTEGR_APP_TO_INTRA" ]]
-# then
 echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
@@ -44,7 +42,11 @@ services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' 
 echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
-Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep -w $i  | sed 's/ //g' | sed 's/"//g'  | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
+
+
+
+
+Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
 if [[ "$Ranges" ]];
 then
 echo "========================================================================================"
@@ -104,10 +106,15 @@ done
 echo New Ranges $Ranges
 fi
 
+
+
+
+
+
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
-for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep -w $i  | sed 's/ //g' | sed 's/"//g' |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
+for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i   |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
 protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
@@ -148,6 +155,13 @@ echo Service $x is added ;
 fi
 fi
 done
+
+
+
+
+
+
+
 
 for x in $(echo $Ranges) ; 
 do 
@@ -231,7 +245,6 @@ fi
 
 
 
-# fi
 
 done 
 
