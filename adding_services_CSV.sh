@@ -65,6 +65,7 @@ if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "
 then 
 echo Removing $z as it is within range $y
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+break
 fi
 done
 done
@@ -98,6 +99,7 @@ if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "
 then 
 echo Removing $z as it is within range $y
 Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
+break
 fi
 done
 done
