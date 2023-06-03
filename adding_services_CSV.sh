@@ -13,6 +13,9 @@ if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
 policy=default-layer3-section
+echo "========================================================================================"
+echo -e "Working on firewall policy $policy : "
+echo "========================================================================================"
 non_zero_list=''
 for i in $(echo $rule_list )
 do if [[ $(grep -w $i $file) ]]; then non_zero_list="$non_zero_list $i" ; fi
