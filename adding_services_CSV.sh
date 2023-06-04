@@ -219,7 +219,7 @@ services=$(echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{
 echo -e $services | sed 's+/infra/services/++g'
 services=$lastservices" "$services
 total_service=$(echo $services | sed 's/,//g' | sed 's/ /, /g' )
-services="\"services\" : [$total_service],"
+services="\"services\" : [ $total_service ],"
 echo $services
 newjson=$(echo $result | json_pp | sed "s+\"services\" :.*+$services+" )
 echo $newjson
