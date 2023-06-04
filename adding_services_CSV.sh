@@ -194,6 +194,8 @@ yy=$newservices" "$services
 total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [$total_service],"
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
+
+
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
@@ -201,27 +203,42 @@ first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort 
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
 lastservices=${lastservices:0:-2}
-# echo $lastservices
-services="\"services\" : [ $lastservices ],"
-read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $lastservices_count services : " input
+read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $lastservices_count services, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
-new_rule_body="{\"action\" : \"ALLOW\", \"display_name\": \"$new_rule\", \"sequence_number\": 1, \"source_groups\" : [ \"ANY\" ], \"destination_groups\" : [ \"ANY\" ], \"logged\" : false, $services \"scope\" : [ \"ANY\" ]}"
-# echo $new_rule_body
-result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$new_rule_body" --header "Content-Type: application/json" )
-services="\"services\" : [ $first120 ],"
+result=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s )
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
 echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
+echo -e "\033[1;32mOld services associated with rule $new_rule (ignoring $dummyport) :\033[0m" 
+echo "========================================================================================"
+services=$(echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
+echo -e $services | sed 's+/infra/services/++g'
+services=$lastservices" "$services
+total_service=$(echo $services | sed 's/,//g' | sed 's/ /, /g' )
+services="\"services\" : [$total_service],"
+newjson=$(echo -e $result | json_pp | sed "s+\"services\" :.*+$services+" )
+result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
+echo "========================================================================================"
 echo -e "\033[1;32mNew services associated with rule $new_rule : \033[0m"
 echo "========================================================================================"
+if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
+then 
+echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
+echo -e $result  ;
+exit 1 ;
+else  
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
 fi
-
 fi
+services="\"services\" : [ $first120 ],"
+fi
+
+
+
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 
