@@ -1,4 +1,9 @@
 #!/bin/bash
+fqdn="192.168.0.42"
+user="admin"
+password="VMware1!VMware1!"
+policy=default-layer3-section
+
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
 for i in $(echo $rule_list |  sed 's/CATCH_//g' ); 
 do
