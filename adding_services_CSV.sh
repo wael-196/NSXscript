@@ -220,7 +220,7 @@ echo -e $services | sed 's+/infra/services/++g'
 services=$lastservices" "$services
 total_service=$(echo $services | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [$total_service],"
-newjson=$(echo -e $result | json_pp | sed "s+\"services\" :.*+$services+" )
+newjson=$(echo $result | json_pp | sed "s+\"services\" :.*+$services+" )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 echo "========================================================================================"
 echo -e "\033[1;32mNew services associated with rule $new_rule : \033[0m"
