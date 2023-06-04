@@ -9,7 +9,6 @@ if [[ -z $(echo $result | grep "\"services\" :" ) ]] ;
 then 
 echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
 echo -e $result  ;
-exit 1 ;
 else  
 echo "========================================================================================"
 echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
