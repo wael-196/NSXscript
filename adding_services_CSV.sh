@@ -47,7 +47,7 @@ fi
 newservices='';
 
 
-old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '  | sed 's+R_++g' )
+old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | sed 's+R_++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '   )
 
 echo old_ranges $old_ranges
 
