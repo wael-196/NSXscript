@@ -93,6 +93,7 @@ done
 done 
 
 Ranges=$Ranges" "$old_ranges
+Ranges=$(echo -e $Ranges | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
 
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
