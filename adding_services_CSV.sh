@@ -192,8 +192,7 @@ echo -e "Totale of $new_service_number services were added"
 
 if (( "$services_number" <= "$max_num" ))
 then
-yy=$newservices" "$services
-total_service=$(echo $yy | sed 's/,//g' | sed 's/ /, /g' )
+total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tr '\n' ' ' | sed 's/ /, /g')
 services="\"services\" : [$total_service],"
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 
