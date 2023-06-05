@@ -46,7 +46,7 @@ echo -e $services | sed 's+/infra/services/++g'
 fi
 newservices='';
 
-ranges_in_old_services=$(echo -e $services | sed 's+/infra/services/++g' |  sed 's+"++g' | sed 's+,++g')
+
 
 
 Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
@@ -56,8 +56,6 @@ echo "==========================================================================
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 echo Ranges found $Ranges
-
-# cleanup before concatination 
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
 f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
@@ -74,9 +72,6 @@ break
 fi
 done
 done
-
-#concatination of ranges 
-
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -86,7 +81,7 @@ for R in $(echo  $Ranges ) ;
 do a=$(echo  $R | awk -F '_' '{print $2}'| awk -F '-' '{print $1}');
 b=$(echo  $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
 f=$(echo  $R | awk -F '_' '{print $1}');
-if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) || ( (( "$c" <= "$b" )) && (( "$c" >= "$a" )) )
+if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
 then 
 Ranges=$(echo $Ranges | sed 's+\<'$x'\>++g' | sed 's+\<'$R'\>+'$e'_'$a'-'$d'+g')
 echo Concatinating $R and $x to $e'_'$a'-'$d
@@ -94,10 +89,6 @@ break
 fi
 done
 done 
-
-#last cleanup
-
-Ranges=$Ranges" "$ranges_in_old_services
 
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
