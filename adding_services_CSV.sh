@@ -47,7 +47,9 @@ fi
 newservices='';
 
 
+old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g')
 
+echo old_ranges $old_ranges
 
 Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
 if [[ "$Ranges" ]];
@@ -89,6 +91,8 @@ break
 fi
 done
 done 
+
+Ranges=$Ranges" "$old_ranges
 
 for z in $(echo $Ranges) ; do 
 e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
