@@ -126,11 +126,6 @@ Ranges=$cleanup_of_ranges_return
 echo New Ranges $Ranges
 fi
 
-
-
-
-
-
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
 echo "========================================================================================"
@@ -175,13 +170,6 @@ echo Service $x is added ;
 fi
 fi
 done
-
-
-
-
-
-
-
 
 for x in $(echo $Ranges) ; 
 do 
