@@ -7,9 +7,9 @@ policy=$1
 action=\"$2\"
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo These Rules are going to be changed ; echo  $rules | tr ' ' '\n'
-read -e -i "$respone" -p "Please enter (Y) to accept" input
+read -e -i "$respone" -p "Please enter (Y) to accept " input
 respone="${input:-$respone}"
-if [[ "respone" == "Y" ]]
+if [[ "$respone" == "Y" ]]
 then
 for i in $(echo $rules ) ; 
 do newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*+\"action\" : $action ,+" );
