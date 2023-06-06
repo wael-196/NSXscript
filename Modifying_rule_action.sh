@@ -10,7 +10,7 @@ echo These Rules are going to be changed ; echo  $rules | tr ' ' '\n'
 read -e -i "$respone" -p "Please enter (Y) to accept" input
 respone="${input:-$respone}"
 If [[ "respone"== "Y" ]]
-Then
+then
 for i in $(echo $rules ) ; 
 do newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*+\"action\" : $action ,+" );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
