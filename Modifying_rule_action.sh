@@ -2,12 +2,13 @@
 fqdn="192.168.0.42"
 user="admin"
 password="VMware1!VMware1!"
-keyword="INTEGR_"
+keyword="CATCH_"
 policy=$1
 action=\"$2\"
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
-echo These Rules are going to be changed ; echo  $rules | tr ' ' '\n'
-read -e -i "$respone" -p "Please enter (Y) to accept " input
+echo -e "\033[1;32mThese Rules are going to be changed\033[0m" 
+echo  $rules | tr ' ' '\n'
+read -e -i "$respone" -p "Please enter <Y> to accept " input
 respone="${input:-$respone}"
 if [[ "$respone" == "Y" ]]
 then
