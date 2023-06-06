@@ -11,7 +11,7 @@ max_num=128
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_CLOSE CATCH_INTRA_FAR CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
 
 getting_services_return=''
-
+cleanup_of_ranges_return=''
 adding_services(){
     newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$2+" )
     result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s -d "$newjson" --header "Content-Type: application/json" )
@@ -22,6 +22,27 @@ getting_services(){
     getting_services_return=$x
 }
 
+
+cleanup_of_ranges(){
+local Range=$1
+for z in $(echo $Range) ; do 
+local e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+local f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+local protocap=$(echo $z | awk -F '_' '{print $1}')
+for y in $(echo $Range) ; do
+local a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+local b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+local c=$(echo $y | awk -F '_' '{print $1}') ;
+if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+then 
+echo Removing $z as it is within range $y
+Range=$(echo $Range | sed 's+\<'$z'\>++g')
+break
+fi
+done
+done
+cleanup_of_ranges_return=$Range
+}
 
 if [[ "$file" ]];
 then 
@@ -72,22 +93,11 @@ echo "==========================================================================
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
 echo Ranges found $Ranges
-for z in $(echo $Ranges) ; do 
-e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
-f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
-protocap=$(echo $z | awk -F '_' '{print $1}')
-for y in $(echo $Ranges) ; do
-a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
-b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
-c=$(echo $y | awk -F '_' '{print $1}') ;
-if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Removing $z as it is within range $y
-Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
-break
-fi
-done
-done
+
+#cleanup before concatrination of ranges 
+cleanup_of_ranges "$Ranges"
+Ranges=$cleanup_of_ranges_return
+
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -106,25 +116,12 @@ fi
 done
 done 
 
+#another cleanup after concatrination of ranges 
+
 Ranges=$Ranges" "$old_ranges
 Ranges=$(echo -e $Ranges | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
-
-for z in $(echo $Ranges) ; do 
-e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
-f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
-protocap=$(echo $z | awk -F '_' '{print $1}')
-for y in $(echo $Ranges) ; do
-a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
-b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
-c=$(echo $y | awk -F '_' '{print $1}') ;
-if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Removing $z as it is within range $y
-Ranges=$(echo $Ranges | sed 's+\<'$z'\>++g')
-break
-fi
-done
-done
+cleanup_of_ranges "$Ranges"
+Ranges=$cleanup_of_ranges_return
 
 echo New Ranges $Ranges
 fi
