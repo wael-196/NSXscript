@@ -21,7 +21,7 @@ echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m";
 echo -e $result  ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32mNew services associated with rule $1 : \033[0m"
+echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
 echo "========================================================================================"
 echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
 fi
