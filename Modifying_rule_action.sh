@@ -1,7 +1,7 @@
 #!/bin/bash
-fqdn="vip-nsx-mgmt.vrack.vsphere.local"
+fqdn="192.168.0.42"
 user="admin"
-password="VMware123!VMware123!"
+password="VMware1!VMware1!"
 keyword="CATCH_"
 policy=$1
 action=\"$2\"
