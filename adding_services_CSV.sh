@@ -9,6 +9,20 @@ services=''
 flow=""
 max_num=128
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_CLOSE CATCH_INTRA_FAR CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
+
+getting_services_return=''
+
+adding_services(){
+    newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$2+" )
+    result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s -d "$newjson" --header "Content-Type: application/json" )
+}
+
+getting_services(){
+    local x=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s )
+    getting_services_return=$x
+}
+
+
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -31,20 +45,23 @@ do
 echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
-services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s )
-if [[ -z $(echo $services | grep "\"services\" :" ) ]] ; 
-then 
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $services  ;
-exit 1 ;
-else  
-echo "========================================================================================" ;
-echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
-echo "========================================================================================" ;
-services=$(echo $services | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
-echo -e $services | sed 's+/infra/services/++g'
+getting_services "$i"
+
+if [[ -z $(echo $getting_services_return | grep "\"services\" :" ) ]] ; 
+    then 
+        echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+        echo -e $getting_services_return  ;
+        exit 1 ;
+    else  
+        echo "========================================================================================" ;
+        echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
+        echo "========================================================================================" ;
+        services=$(echo $getting_services_return | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
+        echo -e $getting_services_return | sed 's+/infra/services/++g'
 fi
-newservices='';
+
+
+newservices=''
 
 old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | sed 's+R_++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '   )
 
@@ -195,6 +212,8 @@ then
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tr '\n' ' ' | sed 's/ /, /g')
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
+adding_services "$i" "$services"
+
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 
 
@@ -239,10 +258,6 @@ fi
 services="\"services\" : [ $first120 ],"
 fi
 
-
-
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
-result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" )
 
 
 
