@@ -2,7 +2,7 @@
 fqdn="192.168.0.42"
 user="admin"
 password="VMware1!VMware1!"
-keyword="INTEGR_"
+keyword="CATCH_"
 policy=$1
 action=\"$2\"
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
