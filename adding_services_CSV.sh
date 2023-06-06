@@ -24,24 +24,24 @@ getting_services(){
 
 
 cleanup_of_ranges(){
-local Range=$1
-for z in $(echo $Range) ; do 
-local e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
-local f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
-local protocap=$(echo $z | awk -F '_' '{print $1}')
-for y in $(echo $Range) ; do
-local a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
-local b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
-local c=$(echo $y | awk -F '_' '{print $1}') ;
-if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
-then 
-echo Removing $z as it is within range $y
-Range=$(echo $Range | sed 's+\<'$z'\>++g')
-break
-fi
-done
-done
-cleanup_of_ranges_return=$Range
+    local Range=$1
+    for z in $(echo $Range) ; do 
+        local e=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $1}')
+        local f=$(echo $z | awk -F '_' '{print $2}'| awk -F '-' '{print $2}')
+        local protocap=$(echo $z | awk -F '_' '{print $1}')
+        for y in $(echo $Range) ; do
+            local a=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
+            local b=$(echo $y | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
+            local c=$(echo $y | awk -F '_' '{print $1}') ;
+            if [[ "$z" != "$y" ]] && (( "$e" >= "$a")) && (( "$f" <= "$b"))  && [[ "$c" == "$protocap" ]] ; 
+            then 
+                echo Removing $z as it is within range $y
+                Range=$(echo $Range | sed 's+\<'$z'\>++g')
+                break
+            fi
+        done
+    done
+    cleanup_of_ranges_return=$Range
 }
 
 if [[ "$file" ]];
@@ -94,7 +94,7 @@ echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: 
 echo "========================================================================================"
 echo Ranges found $Ranges
 
-#cleanup before concatrination of ranges 
+#cleanup before concatination of ranges 
 cleanup_of_ranges "$Ranges"
 Ranges=$cleanup_of_ranges_return
 
@@ -116,10 +116,10 @@ fi
 done
 done 
 
-#another cleanup after concatrination of ranges 
+#another cleanup after concatination of ranges 
 
 Ranges=$Ranges" "$old_ranges
-Ranges=$(echo -e $Ranges | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
+Ranges=$(echo -e $Ranges | tr ' ' '\n' | awk -F '_' '{print $2"_"$1}' | sort -n | uniq | awk -F '_' '{print $2"_"$1}' |  tr '\n' ' ')
 cleanup_of_ranges "$Ranges"
 Ranges=$cleanup_of_ranges_return
 
