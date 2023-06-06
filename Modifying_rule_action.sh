@@ -2,7 +2,6 @@
 fqdn="vip-nsx-mgmt.vrack.vsphere.local"
 user="admin"
 password="VMware123!VMware123!"
-file="ports2.txt"
 keyword="CATCH_"
 policy=$1
 action=\"$2\"
