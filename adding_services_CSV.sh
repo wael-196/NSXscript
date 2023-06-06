@@ -266,3 +266,6 @@ done
 else 
 echo -e "\033[1;31mWrong file name, please add a file ! \033[0m"; 
 fi
+
+
+
