@@ -23,7 +23,7 @@ fi
 for i in $(echo $rule_list |  sed 's/CATCH_//g' ); 
 do
 services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
-result=$(adding_services $i $services)
+adding_services $i $services
 
 done 
 
