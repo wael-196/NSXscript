@@ -7,6 +7,10 @@ policy=$1
 action=\"$2\"
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo These Rules are going to be changed ; echo  $rules | tr ' ' '\n'
+read -e -i "$respone" -p "Please enter (Y) to accept" input
+respone="${input:-$respone}"
+If [[ "respone"=="Y"]]
+Then
 for i in $(echo $rules ) ; 
 do newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*+\"action\" : $action ,+" );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
@@ -22,3 +26,4 @@ echo "==========================================================================
 echo $result | awk -F '"action" : ' '{print $2}' | awk -F ',' '{print $1}'
 fi
 done
+fi
