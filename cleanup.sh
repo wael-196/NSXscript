@@ -1,5 +1,5 @@
 #!/bin/bash
-fqdn="192.168.0.41"
+fqdn="192.168.0.42"
 user="adimn"
 password="VMware1!VMware1!"
 policy=default-layer3-section
