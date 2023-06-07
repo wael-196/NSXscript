@@ -208,6 +208,8 @@ else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 iterations=$(( $services_number / $max_num ))
 lastservices_count=$(( $services_number % $max_num ))
+
+echo iterations $iterations  lastservices_count $lastservices_count
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
