@@ -197,8 +197,8 @@ if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
 then
 for R in $(echo $Ranges)
 do 
-a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') &
-b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') &
+a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
 c=$(echo $R | awk -F '_' '{print $1}') 
 if (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]] 
 then
