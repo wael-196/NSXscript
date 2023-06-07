@@ -44,6 +44,14 @@ cleanup_of_ranges(){
     cleanup_of_ranges_return=$Range
 }
 
+adding_service_to_inventory(){
+
+
+
+
+}
+
+
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -192,7 +200,7 @@ done
 new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e "Totale of $new_service_number services were added"
-
+services_number=423
 if (( "$services_number" <= "$max_num" ))
 then
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tr '\n' ' ' | sed 's/ /, /g')
@@ -205,7 +213,8 @@ adding_services "$i" "$services"
 
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
-lastservices_count=$(( $services_number-$max_num ))
+iterations=$(( $services_number / $max_num ))
+lastservices_count=$(( $services_number % $max_num ))
 first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
 first120=${first120:0:-2}
 lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
