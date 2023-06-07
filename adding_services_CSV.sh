@@ -92,7 +92,7 @@ then
 echo "========================================================================================"
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
 echo "========================================================================================"
-echo Ranges found $Ranges
+echo Ranges found New ranges $Ranges Old ranges $old_ranges
 
 #cleanup before concatination of ranges 
 cleanup_of_ranges "$Ranges"
