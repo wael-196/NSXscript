@@ -141,7 +141,7 @@ within=0
 if [[ "$Ranges" ]];
 then
 firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-firstnum=24123412344
+firstnum=49783
 if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
 then
 for R in $(echo $Ranges) ; 
