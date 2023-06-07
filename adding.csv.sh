@@ -53,7 +53,7 @@ getting_services(){
         exit 1 ;
     else  
         echo "========================================================================================" ;
-        echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
+        echo -e "\033[1;32mOld services associated with rule $1 (ignoring $dummyport) :\033[0m" ;
         echo "========================================================================================" ;
         getting_services_return=$(echo $x | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
         echo -e $getting_services_return | sed 's+/infra/services/++g'
