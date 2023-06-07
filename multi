@@ -5,7 +5,14 @@ echo_100(){
     for i in {1..100}; do echo $1"_"$i ; done 
 }
 
+echo_10000000(){
 
-echo_100 "u" &
+    for i in {1..10000000}; do echo $1"_"$i ; done 
+}
+
+
+echo_10000000 "u" &
 echo_100 "x" &
 
+wait 
+echo done 
