@@ -12,8 +12,7 @@ result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/dom
 
 for i in $(echo $rule_list |  sed 's/CATCH_//g' ); 
 do
-# services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
-services="\"services\" : [ ],"
+services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
 adding_services "$i" "$services"
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
