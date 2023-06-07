@@ -23,5 +23,6 @@ echo lowest $lowest highest $highest
 if (( "$i" >= 1 ))
 read -e -i "$new_rule" -p "Please enter the new rule name to services from $lowest to $highest, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
+fi
 lowest=$(($lowest + $max_num)) 
 done
