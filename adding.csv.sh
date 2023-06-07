@@ -45,7 +45,6 @@ adding_services(){
 
 getting_services(){
     local x=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s )
-
     if [[ -z $(echo $x | grep "\"services\" :" ) ]] ; 
     then 
         echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
@@ -55,8 +54,8 @@ getting_services(){
         echo "========================================================================================" ;
         echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
         echo "========================================================================================" ;
-        services=$(echo $x | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
-        echo -e $services | sed 's+/infra/services/++g'
+        getting_services_return=$(echo $x | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
+        echo -e $getting_services_return | sed 's+/infra/services/++g'
 fi
 
 }
@@ -107,7 +106,7 @@ echo "==========================================================================
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
 getting_services "$i"
-
+services=$getting_services_return
 newservices=''
 
 old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | sed 's+R_++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '   )
@@ -213,8 +212,6 @@ highest=$(($highest + $lastservices_count))
 if (( "$iterations" == 1 ))
 then
 lowest=1
-else
-echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 fi
 else
 highest=$(($highest + $max_num))
@@ -224,6 +221,7 @@ total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
 if (( "$f" > 1 ))
 then
+echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 read -e -i "$new_rule" -p "Please enter the new rule name to add services from $lowest to $highest, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
 i=$new_rule
