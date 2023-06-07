@@ -199,7 +199,31 @@ done
 
 new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
-echo -e "Totale of $new_service_number services were added"
+echo -e "Total of $new_service_number services were added"
+
+
+iterations=$(( $services_number / $max_num ))
+let iterations=$iterations+1
+lastservices_count=$(( $services_number % $max_num ))
+lowest=1
+highest=0
+for ((i=1;i<=$iterations;i++)) do 
+if [[ "$i" == "$iterations" ]]
+then
+highest=$(($highest+$lastservices_count))
+if [[ "$iterations"== 1 ]]
+then
+lowest=1
+fi
+else
+highest=$(($highest+$max_num))
+fi
+total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
+total_service=${total_service:0:-2}
+services="\"services\" : [ $total_service ],"
+adding_services "$i" "$services"
+lowest=$(($lowest+$max_num)) 
+done
 
 if (( "$services_number" <= "$max_num" ))
 then
@@ -207,8 +231,6 @@ total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | 
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
 adding_services "$i" "$services"
-# services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
-
 
 
 else
@@ -245,6 +267,8 @@ adding_services "$new_rule" "$services"
 
 
 fi
+
+
 services="\"services\" : [ $first120 ],"
 adding_services "$i" "$services"
 result=$adding_services_return
