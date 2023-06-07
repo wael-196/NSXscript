@@ -2,8 +2,9 @@
 
 echo_100(){
 
-    for i in {1..100}; do echo $i ; done 
+    for i in {1..100}; do echo $1"_"$i ; done 
 }
 
 
-echo_100
+echo_100 "u"
+echo_100 "x"
