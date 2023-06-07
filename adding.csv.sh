@@ -233,7 +233,7 @@ fi
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
-if [[ "$lowest" <= "$highest" ]] && (( "$f" > 1 ))
+if (( "$f" > 1 )) && (( "$lowest" <= "$highest" ))
 then
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 read -e -i "$new_rule" -p "Please enter the new rule name to add services from $lowest to $highest, please make sure that the new rule is already created : " input
@@ -241,7 +241,7 @@ new_rule="${input:-$new_rule}"
 i=$new_rule
 getting_services "$i"
 fi
-if [[ "$lowest" <= "$highest" ]]
+if (( "$lowest" <= "$highest" ))
 then
 adding_services "$i" "$services"
 lowest=$(($lowest + $max_num)) 
