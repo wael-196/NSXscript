@@ -210,7 +210,7 @@ for ((f=1;f<=$iterations;f++)) do
 if [[ "$f" == "$iterations" ]]
 then
 highest=$(($highest + $lastservices_count))
-if [[ "$iterations" == 1 ]]
+if (( "$iterations" == 1 ))
 then
 lowest=1
 else
