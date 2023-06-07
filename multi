@@ -6,5 +6,7 @@ echo_100(){
 }
 
 
-echo_100 "u"
-echo_100 "x"
+echo_100 "u" &
+echo_100 "x" &
+
+wait 
