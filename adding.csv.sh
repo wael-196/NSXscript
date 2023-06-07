@@ -45,7 +45,20 @@ adding_services(){
 
 getting_services(){
     local x=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s )
-    getting_services_return=$x
+
+    if [[ -z $(echo $x | grep "\"services\" :" ) ]] ; 
+    then 
+        echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+        echo -e $x  ;
+        exit 1 ;
+    else  
+        echo "========================================================================================" ;
+        echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
+        echo "========================================================================================" ;
+        services=$(echo $x | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
+        echo -e $services | sed 's+/infra/services/++g'
+fi
+
 }
 
 
@@ -94,20 +107,6 @@ echo "==========================================================================
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
 getting_services "$i"
-
-if [[ -z $(echo $getting_services_return | grep "\"services\" :" ) ]] ; 
-    then 
-        echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-        echo -e $getting_services_return  ;
-        exit 1 ;
-    else  
-        echo "========================================================================================" ;
-        echo -e "\033[1;32mOld services associated with rule $i (ignoring $dummyport) :\033[0m" ;
-        echo "========================================================================================" ;
-        services=$(echo $getting_services_return | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
-        echo -e $services | sed 's+/infra/services/++g'
-fi
-
 
 newservices=''
 
