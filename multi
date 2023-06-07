@@ -18,6 +18,6 @@ fi
 else
 highest=$(($highest + $max_num))
 fi
-lowest=$(($lowest + $max_num)) 
 echo lowest $lowest highest $highest
+lowest=$(($lowest + $max_num)) 
 done
