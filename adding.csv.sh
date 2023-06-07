@@ -247,6 +247,7 @@ fi
 if (( "$lowest" <= "$highest" ))
 then
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
+echo $total_service
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
 if (( "$f" > 1 )) 
