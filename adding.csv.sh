@@ -7,7 +7,7 @@ dummyport=TCP_65535
 newservices=''
 services=''
 flow=""
-max_num=6
+max_num=128
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_CLOSE CATCH_INTRA_FAR CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
 getting_services_return=''
 cleanup_of_ranges_return=''
@@ -227,7 +227,6 @@ done
 new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e "Total of $new_service_number services were added"
-echo services_number $services_number
 #adding services to rules
 
 iterations=$(( $services_number / $max_num ))
