@@ -207,8 +207,8 @@ iterations=$(($iterations + 1 ))
 lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
-for ((i=1;i<=$iterations;i++)) do 
-if [[ "$i" == "$iterations" ]]
+for ((f=1;f<=$iterations;f++)) do 
+if [[ "$f" == "$iterations" ]]
 then
 highest=$(($highest + $lastservices_count))
 if [[ "$iterations" == 1 ]]
@@ -223,77 +223,16 @@ fi
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
-if [[ "$i" >= 1 ]]
-read -e -i "$new_rule" -p "Please enter the new rule name to services from $lowest to $highest, please make sure that the new rule is already created : " input
+if (( "$f" >= 1 ))
+then
+read -e -i "$new_rule" -p "Please enter the new rule name to add services from $lowest to $highest, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
-adding_services "$i" "$new_rule"
+i=$new_rule
+fi
+adding_services "$i" "$services"
 lowest=$(($lowest + $max_num)) 
 done
 
-
-
-if (( "$services_number" <= "$max_num" ))
-then
-total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tr '\n' ' ' | sed 's/ /, /g')
-total_service=${total_service:0:-2}
-services="\"services\" : [ $total_service ],"
-adding_services "$i" "$services"
-
-
-else
-echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
-lastservices_count=$(( $services_number-$max_num ))
-first120=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | head -n $max_num |  tr '\n' ' ' | sed 's/ /, /g' )
-first120=${first120:0:-2}
-lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | tail -n $lastservices_count |  tr '\n' ' ' | sed 's/ /, /g' )
-lastservices=${lastservices:0:-2}
-read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $lastservices_count services, please make sure that the new rule is already created : " input
-new_rule="${input:-$new_rule}"
-
-getting_services "$new_rule"
-result=$getting_services_return
-
-
-if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
-then 
-echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
-echo -e $result  ;
-exit 1 ;
-else  
-echo "========================================================================================"
-echo -e "\033[1;32mOld services associated with rule $new_rule (ignoring $dummyport) :\033[0m" 
-echo "========================================================================================"
-services=$(echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}'| sed 's+"/infra/services/'$dummyport'",++' | sed 's+"/infra/services/'$dummyport'"++')
-echo -e $services | sed 's+/infra/services/++g'
-services=$lastservices" "$services
-total_service=$(echo $services | sed 's/,//g' | sed 's/ /, /g' )
-services="\"services\" : [ $total_service ],"
-
-
-adding_services "$new_rule" "$services"
-
-
-fi
-
-
-services="\"services\" : [ $first120 ],"
-adding_services "$i" "$services"
-result=$adding_services_return
-fi
-
-
-
-if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
-then 
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $result  ;
-exit 1 ;
-else  
-echo "========================================================================================"
-echo -e "\033[1;32mNew services associated with rule $i : \033[0m"
-echo "========================================================================================"
-echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
-fi
 done 
 else 
 echo -e "\033[1;31mWrong file name, please add a file ! \033[0m"; 
