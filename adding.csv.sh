@@ -195,7 +195,7 @@ then
 firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
 if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
 then
-for R in $(echo $Ranges) ; 
+for R in $(echo $Ranges) &
 do 
 a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}');
 b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
