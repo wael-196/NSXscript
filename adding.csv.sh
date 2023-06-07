@@ -115,7 +115,8 @@ do
 echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
-
+services=''
+newservices=''
 checking_related_services "$i"
 echo $checking_related_services_return
 if [[ "$checking_related_services_return" ]]
@@ -126,12 +127,12 @@ Rules=$i" "$checking_related_services_return
 
 for l in $(echo $Rules)
 do
-echo $l
+getting_services "$l"
+services=$services" "$getting_services_return
 done
+
+echo $services
 exit 1
-getting_services "$i"
-services=$getting_services_return
-newservices=''
 
 old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | sed 's+R_++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '   )
 
