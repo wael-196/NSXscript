@@ -124,7 +124,7 @@ Ranges=$(echo -e $Ranges | tr ' ' '\n' | awk -F '_' '{print $2"_"$1}' | sort -n 
 cleanup_of_ranges "$Ranges"
 Ranges=$cleanup_of_ranges_return
 
-echo New Ranges $Ranges
+echo New Ranges after concatination $Ranges
 fi
 
 echo "========================================================================================"
