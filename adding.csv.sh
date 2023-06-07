@@ -247,6 +247,7 @@ else
 fi
 if (( "$lowest" <= "$highest" ))
 then
+    echo lowest $lowest highest $highest
     total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
     if [[ "$total_service" ]]
     then
