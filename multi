@@ -1,5 +1,4 @@
 #!/bin/bash
-
 services_number=320
 max_num=128
 iterations=$(( $services_number / $max_num ))
