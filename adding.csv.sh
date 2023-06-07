@@ -118,7 +118,6 @@ echo "==========================================================================
 services=''
 newservices=''
 checking_related_services "$i"
-echo $checking_related_services_return
 if [[ "$checking_related_services_return" ]]
 then 
 echo Found related rules $checking_related_services_return
