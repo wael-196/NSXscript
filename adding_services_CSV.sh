@@ -87,7 +87,7 @@ newservices=''
 old_ranges=$(echo -e $services | sed 's+/infra/services/++g' | sed 's+,++g' | sed 's+"++g' | sed 's+R_++g' | tr ' ' '\n' | grep "[0-9]-[0-9]" | tr '\n' ' '   )
 
 Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
-if [[ "$Ranges" ]];
+if [[ "$Ranges" ]] || [ "$old_ranges" ];
 then
 echo "========================================================================================"
 echo -e "\033[1;32mChecking if there are Ranges of services to be concatinated: \033[0m"
