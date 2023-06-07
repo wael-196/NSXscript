@@ -229,12 +229,10 @@ new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | 
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e "Total of $new_service_number services were added"
 echo services_number $services_number
-echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra 
 #adding services to rules
 
 iterations=$(( $services_number / $max_num ))
 iterations=$(($iterations + 1 ))
-echo iterations $iterations
 lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
@@ -245,11 +243,9 @@ then
 else
     highest=$(($highest + $max_num))
 fi
-echo lowest $lowest highest $highest
 if (( "$lowest" <= "$highest" ))
 then
     total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
-    echo total_service $total_service
     total_service=${total_service:0:-2}
     services2="\"services\" : [ $total_service ],"
     if (( "$f" > 1 )) 
