@@ -228,12 +228,13 @@ done
 new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e "Total of $new_service_number services were added"
-
+echo services_number $services_number
 
 #adding services to rules
 
 iterations=$(( $services_number / $max_num ))
 iterations=$(($iterations + 1 ))
+echo iterations $iterations
 lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
