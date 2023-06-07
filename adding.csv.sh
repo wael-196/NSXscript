@@ -86,7 +86,7 @@ cleanup_of_ranges(){
 
 checking_related_services(){
 
-    checking_related_services_return=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w $1"-"[0-9] | sort )
+    checking_related_services_return=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "$1"-"[0-9]\|$1"_"[0-9]" | sort )
 }
 
 if [[ "$file" ]];
