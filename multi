@@ -7,6 +7,7 @@ lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
 echo iterations $iterations
+echo lastservices_count $lastservices_count
 for ((i=1;i<=$iterations;i++)) do 
 if [[ "$i" == "$iterations" ]]
 then
