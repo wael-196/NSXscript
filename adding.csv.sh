@@ -212,7 +212,11 @@ lastservices=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | s
 lastservices=${lastservices:0:-2}
 read -e -i "$new_rule" -p "Please enter the new rule name to add the extra $lastservices_count services, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
-result=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s )
+
+getting_services "$new_rule"
+result=$getting_services_return
+
+
 if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
@@ -227,8 +231,10 @@ echo -e $services | sed 's+/infra/services/++g'
 services=$lastservices" "$services
 total_service=$(echo $services | sed 's/,//g' | sed 's/ /, /g' )
 services="\"services\" : [ $total_service ],"
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$services+" )
-result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$new_rule -s -d "$newjson" --header "Content-Type: application/json" )
+
+
+adding_services "$new_rule" "$services"
+result=$adding_services_return
 echo "========================================================================================"
 echo -e "\033[1;32mNew services associated with rule $new_rule : \033[0m"
 echo "========================================================================================"
