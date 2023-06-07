@@ -11,6 +11,7 @@ max_num=2
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_CLOSE CATCH_INTRA_FAR CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
 getting_services_return=''
 cleanup_of_ranges_return=''
+checking_related_services_return=''
 
 adding_services_to_inventory(){
 local protosmall=$(echo $2 | tr [:upper:] [:lower:]);
@@ -83,6 +84,11 @@ cleanup_of_ranges(){
 }
 
 
+checking_related_services(){
+
+    checking_related_services_return=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w $1"_"[0-9] )
+}
+
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -109,6 +115,13 @@ do
 echo "========================================================================================" ;
 echo -e "\033[1;32mWorking on rule $i :\033[0m" ;
 echo "========================================================================================" ;
+
+checking_related_services "$i"
+
+echo $checking_related_services_return
+
+exit 1
+
 getting_services "$i"
 services=$getting_services_return
 newservices=''
