@@ -91,6 +91,9 @@ echo "==========================================================================
 echo -e "Working on firewall policy $policy : "
 echo "========================================================================================"
 non_zero_list=''
+
+#getting list of non zero rules 
+
 for i in $(echo $rule_list )
 do if [[ $(grep -w $i $file) ]]; then non_zero_list="$non_zero_list $i" ; fi
 done 
@@ -99,6 +102,7 @@ echo -e "\033[1;32mNon Zero Rules: \033[0m" ;
 echo "========================================================================================" ;
 echo -e $non_zero_list | sed 's/CATCH_//g' | tr ' ' '\n'
 
+# working on rules 
 
 for i in $(echo $non_zero_list |  sed 's/CATCH_//g' ); 
 do 
@@ -124,6 +128,10 @@ echo Old ranges $old_ranges
 cleanup_of_ranges "$Ranges"
 Ranges=$cleanup_of_ranges_return
 
+
+
+#concatination of ranges 
+
 for x in $(echo $Ranges ) ; 
 do 
 c=$(echo  $x | awk -F '_' '{print $2}'| awk -F '-' '{print $1}') ;
@@ -142,6 +150,7 @@ fi
 done
 done 
 
+# adding old ranges at this stage along with new ranges 
 #another cleanup after concatination of ranges 
 
 Ranges=$Ranges" "$old_ranges
@@ -151,6 +160,9 @@ Ranges=$cleanup_of_ranges_return
 
 echo New Ranges after concatination $Ranges
 fi
+
+
+#adding services to inventory 
 
 echo "========================================================================================"
 echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
@@ -199,6 +211,8 @@ new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | 
 services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
 echo -e "Total of $new_service_number services were added"
 
+
+#adding services to rules
 
 iterations=$(( $services_number / $max_num ))
 iterations=$(($iterations + 1 ))
