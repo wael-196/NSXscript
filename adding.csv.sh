@@ -9,12 +9,38 @@ services=''
 flow=""
 max_num=128
 rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR_APP_TO_EXTRA CATCH_INTEGR_APP_TO_INTRA CATCH_INTEGR_EXTRA_TO_APP CATCH_INTEGR_INTRA_TO_APP CATCH_INTRA_APP CATCH_INTRA_CLOSE CATCH_INTRA_FAR CATCH_INTRA_NEAR CATCH_NEAR_TO_FAR"
-adding_services_return=''
 getting_services_return=''
 cleanup_of_ranges_return=''
+
+adding_services_to_inventory(){
+local protosmall=$(echo $2 | tr [:upper:] [:lower:]);
+local Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$1" -s -d '{"display_name": "'$1'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$3'"],"l4_protocol": "'$2'"}]}' --header "Content-Type: application/json" ; )
+newservices=$newservices" "\"/infra/services/$1\", ;
+if [[ "$Test" ]];
+then
+echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
+echo -e $Test  ;
+exit 1
+else
+echo Service $1 is added ;
+fi
+}
+
+
 adding_services(){
     newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1  -H "Accept: application/json" -s | sed "s+\"services\" :.*+$2+" )
-    adding_services_return=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s -d "$newjson" --header "Content-Type: application/json" )
+    result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$1 -s -d "$newjson" --header "Content-Type: application/json" )
+    echo "========================================================================================"
+    echo -e "\033[1;32mNew services associated with rule $1 : \033[0m"
+    echo "========================================================================================"
+    if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
+    then 
+    echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
+    echo -e $result  ;
+    exit 1 ;
+    else  
+    echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
+    fi
 }
 
 getting_services(){
@@ -134,7 +160,6 @@ echo "==========================================================================
 for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i   |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
-protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
 Test='';
 within=0
@@ -160,35 +185,16 @@ fi
 
 if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
 then
-Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
-newservices=$newservices" "\"/infra/services/$x\", ;
-if [[ "$Test" ]];
-then
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $Test  ;
-exit 1
-else
-echo Service $x is added ;
-fi
+adding_services_to_inventory "$x" "$protocap" "$destport"
 fi
 done
 
 for x in $(echo $Ranges) ; 
 do 
 protocap=$(echo $x | awk -F '_' '{print $1}');
-protosmall=$(echo $protocap | tr [:upper:] [:lower:]);
 destport=$(echo $x | awk -F '_' '{print $2}');
 x=R_$x
-Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$destport'"],"l4_protocol": "'$protocap'"}]}' --header "Content-Type: application/json" ; )
-newservices=$newservices" "\"/infra/services/$x\", ;
-if [[ "$Test" ]];
-then
-echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
-echo -e $Test  ;
-exit 1
-else
-echo Service $x is added ;
-fi
+adding_services_to_inventory "$x" "$protocap" "$destport"
 done
 
 new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
@@ -201,8 +207,10 @@ total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | 
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
 adding_services "$i" "$services"
-result=$adding_services_return
 # services="\"services\" : [ \"\/infra\/services\/TCP_65535\" ],"
+
+
+
 else
 echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 lastservices_count=$(( $services_number-$max_num ))
@@ -234,18 +242,8 @@ services="\"services\" : [ $total_service ],"
 
 
 adding_services "$new_rule" "$services"
-result=$adding_services_return
-echo "========================================================================================"
-echo -e "\033[1;32mNew services associated with rule $new_rule : \033[0m"
-echo "========================================================================================"
-if [[ -z $(echo $result | grep "\"services\" :" ) ]] ; 
-then 
-echo -e "\033[1;31mCannot get services, please make sure that the new rule is already created \033[0m"; 
-echo -e $result  ;
-exit 1 ;
-else  
-echo $result | awk -F '"services" : \\[' '{print $2}' | awk -F ']' '{print $1}' | sed 's+/infra/services/++g'
-fi
+
+
 fi
 services="\"services\" : [ $first120 ],"
 adding_services "$i" "$services"
