@@ -203,27 +203,34 @@ echo -e "Total of $new_service_number services were added"
 
 
 iterations=$(( $services_number / $max_num ))
-let iterations=$iterations+1
+iterations=$(($iterations + 1 ))
 lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
 for ((i=1;i<=$iterations;i++)) do 
 if [[ "$i" == "$iterations" ]]
 then
-highest=$(($highest+$lastservices_count))
-if [[ "$iterations"== 1 ]]
+highest=$(($highest + $lastservices_count))
+if [[ "$iterations" == 1 ]]
 then
 lowest=1
+else
+echo -e "\033[1;31mNumber of services has exceeded maximum size $max_num \033[0m";
 fi
 else
-highest=$(($highest+$max_num))
+highest=$(($highest + $max_num))
 fi
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
-adding_services "$i" "$services"
-lowest=$(($lowest+$max_num)) 
+if [[ "$i" >= 1 ]]
+read -e -i "$new_rule" -p "Please enter the new rule name to services from $lowest to $highest, please make sure that the new rule is already created : " input
+new_rule="${input:-$new_rule}"
+adding_services "$i" "$new_rule"
+lowest=$(($lowest + $max_num)) 
 done
+
+
 
 if (( "$services_number" <= "$max_num" ))
 then
