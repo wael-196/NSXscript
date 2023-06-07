@@ -2,10 +2,11 @@
 services_number=320
 max_num=128
 iterations=$(( $services_number / $max_num ))
-let iterations=$iterations+1
+iterations=$(($iterations + 1 ))
 lastservices_count=$(( $services_number % $max_num ))
 lowest=1
 highest=0
+echo iterations $iterations
 for ((i=1;i<=$iterations;i++)) do 
 if [[ "$i" == "$iterations" ]]
 then
