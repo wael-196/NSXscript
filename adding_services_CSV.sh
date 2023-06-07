@@ -44,13 +44,6 @@ cleanup_of_ranges(){
     cleanup_of_ranges_return=$Range
 }
 
-adding_service_to_inventory(){
-
-
-
-
-}
-
 
 if [[ "$file" ]];
 then 
