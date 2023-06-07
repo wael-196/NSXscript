@@ -223,7 +223,7 @@ fi
 total_service=$(echo -e "$newservices $services" | sed 's/,//g' | tr ' ' '\n' | sort | uniq | grep infra | sed -n ''$lowest','$highest'p' | tr '\n' ' ' | sed 's/ /, /g')
 total_service=${total_service:0:-2}
 services="\"services\" : [ $total_service ],"
-if (( "$f" >= 1 ))
+if (( "$f" > 1 ))
 then
 read -e -i "$new_rule" -p "Please enter the new rule name to add services from $lowest to $highest, please make sure that the new rule is already created : " input
 new_rule="${input:-$new_rule}"
