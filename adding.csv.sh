@@ -223,7 +223,8 @@ then
     x=R_$x
     adding_services_to_inventory "$x" "$protocap" "$destport" &
     done
-
+    
+    wait
     new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
     services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
     echo -e "Total of $new_service_number services were added"
