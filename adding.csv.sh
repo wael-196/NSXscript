@@ -16,7 +16,6 @@ checking_related_services_return=''
 adding_services_to_inventory(){
     local protosmall=$(echo $2 | tr [:upper:] [:lower:]);
     local Test=$(curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$1" -s -d '{"display_name": "'$1'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "'$protosmall'-ports","destination_ports": ["'$3'"],"l4_protocol": "'$2'"}]}' --header "Content-Type: application/json" ; )
-    newservices=$newservices" "\"/infra/services/$1\", ;
     if [[ "$Test" ]];
     then
         echo -e "\033[1;31mCannot get services, something went wrong ! \033[0m"; 
@@ -186,34 +185,35 @@ then
     echo "========================================================================================"
     for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i   |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
     do 
-    protocap=$(echo $x | awk -F '_' '{print $1}');
-    destport=$(echo $x | awk -F '_' '{print $2}');
-    Test='';
-    within=0
-    if [[ "$Ranges" ]];
-    then
-    firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-    if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
-    then
-    for R in $(echo $Ranges)
-    do 
-    a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
-    b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
-    c=$(echo $R | awk -F '_' '{print $1}') 
-    if (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]] 
-    then
-    echo Ignore Adding $x as it is within Range R_$c"_"$a"-"$b;
-    within=1 ;
-    break
-    fi
-    done
-    fi
-    fi
+        protocap=$(echo $x | awk -F '_' '{print $1}');
+        destport=$(echo $x | awk -F '_' '{print $2}');
+        Test='';
+        within=0
+        if [[ "$Ranges" ]];
+        then
+        firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
+        if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
+        then
+        for R in $(echo $Ranges)
+        do 
+        a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+        b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+        c=$(echo $R | awk -F '_' '{print $1}') 
+        if (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]] 
+        then
+        echo Ignore Adding $x as it is within Range R_$c"_"$a"-"$b;
+        within=1 ;
+        break
+        fi
+        done
+        fi
+        fi
 
-    if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
-    then
-    adding_services_to_inventory "$x" "$protocap" "$destport" 
-    fi
+        if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
+        then
+        adding_services_to_inventory "$x" "$protocap" "$destport" &
+        newservices=$newservices" "\"/infra/services/$x\", ;
+        fi
     done
 
     for x in $(echo $Ranges) ; 
@@ -221,10 +221,11 @@ then
     protocap=$(echo $x | awk -F '_' '{print $1}');
     destport=$(echo $x | awk -F '_' '{print $2}');
     x=R_$x
-    adding_services_to_inventory "$x" "$protocap" "$destport" 
+    adding_services_to_inventory "$x" "$protocap" "$destport" &
+    newservices=$newservices" "\"/infra/services/$x\", ;
     done
     
-
+wait 
     new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
     services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
     echo -e "Total of $new_service_number services were added"
