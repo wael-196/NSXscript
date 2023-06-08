@@ -13,6 +13,6 @@ echo_10000000(){
 
 echo_10000000 "u" &
 echo_100 "x" &
-
-wait 
+jobs
+ 
 echo done 
