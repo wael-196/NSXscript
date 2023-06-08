@@ -1,18 +1,20 @@
 #!/bin/bash
 
+x=0
 echo_100(){
 
-    for i in {1..100}; do echo $1"_"$i ; done 
+    for i in {1..100}; do x=$(( $x+3 )) ; done 
+    
 }
 
 echo_10000000(){
 
-    for i in {1..10000000}; do echo $1"_"$i ; done 
+    for i in {1..10000000}; do x=$(( $x+1 )) ; done 
 }
 
 
 echo_10000000 "u" &
 echo_100 "x" &
 jobs
- 
-echo done 
+ wait
+echo x 
