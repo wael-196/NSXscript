@@ -212,7 +212,7 @@ then
 
     if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
     then
-    adding_services_to_inventory "$x" "$protocap" "$destport" &
+    adding_services_to_inventory "$x" "$protocap" "$destport" 
     fi
     done
 
@@ -221,10 +221,10 @@ then
     protocap=$(echo $x | awk -F '_' '{print $1}');
     destport=$(echo $x | awk -F '_' '{print $2}');
     x=R_$x
-    adding_services_to_inventory "$x" "$protocap" "$destport" &
+    adding_services_to_inventory "$x" "$protocap" "$destport" 
     done
     
-    wait
+
     new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
     services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
     echo -e "Total of $new_service_number services were added"
