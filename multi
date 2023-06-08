@@ -4,12 +4,13 @@ x=0
 echo_100(){
 
 x=$(( $x+3 ))  
-    
+f=$x    
 }
 
 echo_10000000(){
 
   x=$(( $x+1 ))
+  z=$x
 }
 
 
@@ -17,4 +18,4 @@ echo_10000000 "u" &
 echo_100 "x" &
 jobs
  wait
-echo $x 
+echo $x $f $z
