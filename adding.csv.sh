@@ -214,7 +214,7 @@ then
     then
     adding_services_to_inventory "$x" "$protocap" "$destport"
     fi
-    $ done
+    & done
 
     for x in $(echo $Ranges) ; 
     do 
@@ -222,7 +222,7 @@ then
     destport=$(echo $x | awk -F '_' '{print $2}');
     x=R_$x
     adding_services_to_inventory "$x" "$protocap" "$destport"
-    $ done
+    & done
 
     new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
     services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
