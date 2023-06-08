@@ -223,8 +223,8 @@ then
     x=R_$x
     adding_services_to_inventory "$x" "$protocap" "$destport" &
     newservices=$newservices" "\"/infra/services/$x\", ;
-    done
-    
+    done    
+jobs
 wait 
     new_service_number=$(echo "$newservices" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  )
     services_number=$(echo "$newservices $services" | sed 's/,//g'  |tr ' ' '\n' |  sort | uniq | grep infra | wc -l  ) 
