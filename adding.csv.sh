@@ -190,7 +190,7 @@ then
         protocap=$(echo $x | awk -F '_' '{print $1}');
         destport=$(echo $x | awk -F '_' '{print $2}');
         within=0
-        ignore_services_in_ranges "$destport" "$destport"
+        ignore_services_in_ranges "$destport" "$protocap"
         if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
         then
         adding_services_to_inventory "$x" "$protocap" "$destport" &
