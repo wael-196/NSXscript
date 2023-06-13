@@ -1,19 +1,15 @@
 #!/bin/bash
 
 export x=3
-export f=0
-export z=0
 
 echo_100(){
 
-x=$(( $x+3 ))  
-f=$x    
+x=$(( $x+3 ))      
 }
 
 echo_10000000(){
 
   x=$(( $x+1 ))
-  z=$x
 }
 
 
@@ -21,4 +17,4 @@ echo_10000000 "x" &
 echo_100 "x" &
 jobs
  wait
-echo $x $f $z
+echo x= $x 
