@@ -180,6 +180,8 @@ then
 
     #adding services to inventory 
 
+    Ranges_compare=$Ranges
+
     echo "========================================================================================"
     echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
     echo "========================================================================================"
@@ -187,34 +189,46 @@ then
     do 
         protocap=$(echo $x | awk -F '_' '{print $1}');
         destport=$(echo $x | awk -F '_' '{print $2}');
-        Test='';
         within=0
-        if [[ "$Ranges" ]];
-        then
-        firstnum=$(echo $Ranges | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-        if [[ ! $(echo $destport | grep "-") ]] && (( "$destport" >= "$firstnum" ))
-        then
-        for R in $(echo $Ranges)
-        do 
-        a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
-        b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
-        c=$(echo $R | awk -F '_' '{print $1}') 
-        if (("$destport" <= "$b")) && (("$destport" >= "$a")) && [[ "$c" == "$protocap" ]] 
-        then
-        echo Ignore Adding $x as it is within Range R_$c"_"$a"-"$b;
-        within=1 ;
-        break
-        fi
-        done
-        fi
-        fi
-
+        ignore_services_in_ranges "$destport" "$destport"
         if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
         then
         adding_services_to_inventory "$x" "$protocap" "$destport" &
         newservices=$newservices" "\"/infra/services/$x\", ;
         fi
     done
+
+
+
+    ignore_services_in_ranges(){
+        within=0
+        if [[ "$Ranges_compare" ]]
+        then
+        local firstnum=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
+        if [[ ! $(echo $1 | grep "-") ]] && (( "$1" >= "$firstnum" ))
+        then
+        for R in $(echo $Ranges_compare)
+        do 
+        a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+        b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+        c=$(echo $R | awk -F '_' '{print $1}') 
+        if (("$1" <= "$b")) && (("$1" >= "$a"))  
+        then
+        if [[ "$c" == "$2" ]]
+        echo Ignore Adding $x 
+        within=1 ;
+        break
+        fi
+        else
+        Ranges_compare=echo $Ranges_compare | sed 's+\<'$R'\>++g'
+        fi
+        done
+        fi
+        fi
+    }
+
+
+
 
     for x in $(echo $Ranges) ; 
     do 
