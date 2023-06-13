@@ -4,12 +4,12 @@ export x=3
 
 echo_100(){
 
-x=$(( $x+3 ))      
+export x=$(( $x+3 ))      
 }
 
 echo_10000000(){
 
-  x=$(( $x+1 ))
+  export x=$(( $x+1 ))
 }
 
 
