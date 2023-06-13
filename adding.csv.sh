@@ -105,7 +105,7 @@ ignore_services_in_ranges(){
                     then
                         if [[ "$c" == "$2" ]]
                         then
-                        echo Ignore Adding $x 
+                        echo Ignore Adding $x &
                         within=1 ;
                         break
                         fi
