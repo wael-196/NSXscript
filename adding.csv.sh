@@ -88,6 +88,37 @@ checking_related_services(){
     checking_related_services_return=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "$1"-"[0-9]\|$1"_"[0-9]" | sort )
 }
 
+
+ignore_services_in_ranges(){
+        within=0
+        if [[ "$Ranges_compare" ]]
+        then
+        local firstnum=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
+        if [[ ! $(echo $1 | grep "-") ]] && (( "$1" >= "$firstnum" ))
+        then
+        for R in $(echo $Ranges_compare)
+        do 
+        a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+        b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+        c=$(echo $R | awk -F '_' '{print $1}') 
+        if (("$1" <= "$b")) && (("$1" >= "$a"))  
+        then
+        if [[ "$c" == "$2" ]]
+        echo Ignore Adding $x 
+        within=1 ;
+        break
+        fi
+        else
+        Ranges_compare=echo $Ranges_compare | sed 's+\<'$R'\>++g'
+        fi
+        done
+        fi
+        fi
+    }
+
+
+
+
 if [[ "$file" ]];
 then 
     policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
@@ -197,37 +228,6 @@ then
         newservices=$newservices" "\"/infra/services/$x\", ;
         fi
     done
-
-
-
-    ignore_services_in_ranges(){
-        within=0
-        if [[ "$Ranges_compare" ]]
-        then
-        local firstnum=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-        if [[ ! $(echo $1 | grep "-") ]] && (( "$1" >= "$firstnum" ))
-        then
-        for R in $(echo $Ranges_compare)
-        do 
-        a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
-        b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
-        c=$(echo $R | awk -F '_' '{print $1}') 
-        if (("$1" <= "$b")) && (("$1" >= "$a"))  
-        then
-        if [[ "$c" == "$2" ]]
-        echo Ignore Adding $x 
-        within=1 ;
-        break
-        fi
-        else
-        Ranges_compare=echo $Ranges_compare | sed 's+\<'$R'\>++g'
-        fi
-        done
-        fi
-        fi
-    }
-
-
 
 
     for x in $(echo $Ranges) ; 
