@@ -1,6 +1,9 @@
 #!/bin/bash
 
-x=0
+export x=3
+export f=0
+export z=0
+
 echo_100(){
 
 x=$(( $x+3 ))  
@@ -14,7 +17,7 @@ echo_10000000(){
 }
 
 
-echo_10000000 "u" &
+echo_10000000 "x" &
 echo_100 "x" &
 jobs
  wait
