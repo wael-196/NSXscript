@@ -113,7 +113,6 @@ ignore_services_in_ranges(){
         fi
         done
         fi
-        fi
     }
 
 
