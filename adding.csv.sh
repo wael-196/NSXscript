@@ -98,8 +98,8 @@ ignore_services_in_ranges(){
             then
                 for R in $(echo $Ranges_compare)
                 do 
-                    a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
                     b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+                    a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
                     c=$(echo $R | awk -F '_' '{print $1}') 
                     if (("$1" <= "$b")) && (("$1" >= "$a"))  
                     then
