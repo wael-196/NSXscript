@@ -208,7 +208,7 @@ then
                         within=1 ;
                         break 
                         fi
-                elif [[ "$c" == "$protocap" ]]
+                elif [[ "$c" == "$protocap" ]] && (( "$destport" > "$b" ))
                 then
                 echo removing ranges $p $x
                 Ranges_compare=$(echo $Ranges_compare | sed 's+\<'$p'\>++g')
