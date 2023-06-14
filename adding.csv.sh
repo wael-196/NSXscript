@@ -188,7 +188,7 @@ then
     echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
     echo "========================================================================================"
     a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
-    b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+    b=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
     c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
     within=0
     for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i   |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
@@ -214,7 +214,7 @@ then
                 echo removing ranges $p $x
                 Ranges_compare=$(echo $Ranges_compare | sed 's+\<'$p'\>++g')
                 echo ranges $Ranges_compare
-                b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+                b=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
                 a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
                 c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
                 fi
