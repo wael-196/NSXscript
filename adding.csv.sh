@@ -209,7 +209,7 @@ then
                         break 
                         fi
                 else 
-                Ranges_compare=echo $Ranges_compare | sed 's+\<'$p'\>++g'
+                Ranges_compare=$(echo $Ranges_compare | sed 's+\<'$p'\>++g')
                 b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
                 a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
                 c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
