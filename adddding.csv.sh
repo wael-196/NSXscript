@@ -92,6 +92,7 @@ checking_related_services(){
 if [[ "$file" ]];
 then 
 policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
+policy=default-layer3-section
 echo "========================================================================================"
 echo -e "Working on firewall policy $policy : "
 echo "========================================================================================"
