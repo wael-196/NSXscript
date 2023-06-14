@@ -159,7 +159,7 @@ then
     do a=$(echo  $R | awk -F '_' '{print $2}'| awk -F '-' '{print $1}');
     b=$(echo  $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}');
     f=$(echo  $R | awk -F '_' '{print $1}');
-    if  [[ "$e" == "$f" ]] && (( "$c" == "$b+1")) || (( "$c" == "$b")) ; 
+    if  [[ "$e" == "$f" ]] && ( (( "$c" == "$b+1")) || (( "$c" == "$b")) ) ; 
     then 
     Ranges=$(echo $Ranges | sed 's+\<'$x'\>++g' | sed 's+\<'$R'\>+'$e'_'$a'-'$d'+g')
     echo Concatinating $R and $x to $e'_'$a'-'$d
