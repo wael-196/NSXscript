@@ -206,7 +206,7 @@ then
                         then
                         echo Ignore Adding $x &
                         within=1 ;
-                        break
+                        break 
                         fi
                 else 
                 Ranges_compare=echo $Ranges_compare | sed 's+\<'$p'\>++g'
