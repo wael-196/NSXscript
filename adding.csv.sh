@@ -196,7 +196,7 @@ then
         protocap=$(echo $x | awk -F '_' '{print $1}');
         destport=$(echo $x | awk -F '_' '{print $2}');
         within=0
-        if [[ ! $(echo $destport | grep "-") ]] 
+        if  [[ "$Ranges_compare" ]] && (( "$destport" >= "$a")) && [[ ! $(echo $destport | grep "-") ]]
         then     
             for p in $(echo $Ranges_compare)
             do 
