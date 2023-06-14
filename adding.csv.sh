@@ -208,7 +208,9 @@ then
                         within=1 ;
                         break 
                         fi
-                else 
+                elif [[ "$c" == "$protocap" ]]
+                then
+                echo removing ranges $p $x
                 Ranges_compare=$(echo $Ranges_compare | sed 's+\<'$p'\>++g')
                 b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
                 a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
