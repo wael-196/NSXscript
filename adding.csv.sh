@@ -200,6 +200,7 @@ then
         then     
             for p in $(echo $Ranges_compare)
             do 
+                echo www $a $b $destport
                 if (( "$destport" >= "$a" )) && (( "$destport" <= "$b" ))   
                 then
                         if [[ "$c" == "$protocap" ]]
