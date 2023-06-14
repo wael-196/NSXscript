@@ -89,36 +89,6 @@ checking_related_services(){
 }
 
 
-ignore_services_in_ranges(){
-        within=0
-        if [[ "$Ranges_compare" ]]
-        then
-            local firstnum=$(echo $Ranges_compare | awk '{print $1}' | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-            if [[ ! $(echo $1 | grep "-") ]] && (( "$1" >= "$firstnum" ))
-            then
-                for R in $(echo $Ranges_compare)
-                do 
-                    b=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
-                    a=$(echo $R | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
-                    c=$(echo $R | awk -F '_' '{print $1}') 
-                    if (("$1" <= "$b")) && (("$1" >= "$a"))  
-                    then
-                        if [[ "$c" == "$2" ]]
-                        then
-                        echo Ignore Adding $x &
-                        within=1 ;
-                        break
-                        fi
-                    else
-                    Ranges_compare=echo $Ranges_compare | sed 's+\<'$R'\>++g'
-                    fi
-                done
-            fi
-        fi
-    }
-
-
-
 
 if [[ "$file" ]];
 then 
@@ -217,12 +187,36 @@ then
     echo "========================================================================================"
     echo -e "\033[1;32mAdding below services to Inventory and Rule $i: \033[0m"
     echo "========================================================================================"
+    a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+    b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+    c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
+    within=0
     for x in $(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i   |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ; 
     do 
         protocap=$(echo $x | awk -F '_' '{print $1}');
         destport=$(echo $x | awk -F '_' '{print $2}');
         within=0
-        ignore_services_in_ranges "$destport" "$protocap"
+        if [[ ! $(echo $destport | grep "-") ]] 
+        then     
+            for p in $(echo $Ranges_compare)
+            do 
+                if (("$destport" >= "$a")) && (("$destport" <= "$b"))   
+                then
+                        if [[ "$c" == "$destport" ]]
+                        then
+                        echo Ignore Adding $x &
+                        within=1 ;
+                        break
+                        fi
+                else 
+                Ranges_compare=echo $Ranges_compare | sed 's+\<'$p'\>++g'
+                b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
+                a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
+                c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
+                fi
+            done
+        fi   
+        
         if [[ ! $(echo $destport | grep "-") ]] && (( "$within" == "0" )) ;
         then
         adding_services_to_inventory "$x" "$protocap" "$destport" &
