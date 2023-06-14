@@ -202,7 +202,7 @@ then
             do 
                 if (("$destport" >= "$a")) && (("$destport" <= "$b"))   
                 then
-                        if [[ "$c" == "$destport" ]]
+                        if [[ "$c" == "$protocap" ]]
                         then
                         echo Ignore Adding $x &
                         within=1 ;
