@@ -200,7 +200,7 @@ then
         then     
             for p in $(echo $Ranges_compare)
             do 
-                if (("$destport" >= "$a")) && (("$destport" <= "$b"))   
+                if (( "$destport" >= "$a" )) && (( "$destport" <= "$b" ))   
                 then
                         if [[ "$c" == "$protocap" ]]
                         then
@@ -212,6 +212,7 @@ then
                 then
                 echo removing ranges $p $x
                 Ranges_compare=$(echo $Ranges_compare | sed 's+\<'$p'\>++g')
+                echo ranges $Ranges_compare
                 b=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $2}') 
                 a=$(echo $Ranges_compare | awk -F '_' '{print $2}' | awk -F '-' '{print $1}') 
                 c=$(echo $Ranges_compare | awk -F '_' '{print $1}') 
