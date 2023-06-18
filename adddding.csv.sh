@@ -8,8 +8,6 @@ rule_list="CATCH_APP_TO_INET CATCH_CLOSE_TO_NEAR CATCH_ENI_TO_CLOSE CATCH_INTEGR
 getting_services_return=''
 cleanup_of_ranges_return=''
 checking_related_services_return=''
-
-echo $file
 cleanup_of_ranges(){
     local Range=$1
     for z in $(echo $Range) ; do 
