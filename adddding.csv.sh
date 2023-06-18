@@ -30,7 +30,7 @@ cleanup_of_ranges(){
     cleanup_of_ranges_return=$Range
 }
 
-policy=$(echo $file | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
+policy=$(echo $file | awk -F '/' '{print $NF}' | awk -F '-' '{print $3}' | awk -F '.' '{print $1}' )
 echo "========================================================================================"
 echo -e "Working on firewall policy $policy : "
 echo "========================================================================================"
@@ -109,6 +109,7 @@ do
     echo rule $i >> error.txt
     echo incorrect ranges $range_error >> error.txt
     echo original ranges $original_range >> error.txt
+    echo file $file>> error.txt
     fi
     fi
 done
