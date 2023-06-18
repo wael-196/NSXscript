@@ -58,6 +58,7 @@ do
     newservices=''
     Rules=$i
     error=0
+    range_error=''
     Ranges=$(cat $file |  grep -v "name,Protocol,Port" |  awk -F ']' '{print $2}' | grep CATCH_ | sed 's/CATCH_//g' | grep -w $i | grep "[0-9]-[0-9]" |  awk -F ',' '{print $3"_"$2}' | sort -n | uniq  |  awk -F '_' '{print $2"_"$1}' ) ;
     original_range=$Ranges
     if [[ "$Ranges" ]];
@@ -92,6 +93,7 @@ do
         then
         echo -e "\033[1;31mError here \033[0m";
         error=1
+        range_error=$range_error" "$e'_'$a'-'$d
         break
         fi
         fi
@@ -104,9 +106,10 @@ do
     echo New Ranges after concatination $Ranges
     if [[ "$error" == 1 ]]
     then
-    echo $policy >> error.txt
-    echo $i >> error.txt
-    echo $original_range >> error.txt
+    echo policy $policy >> error.txt
+    echo rule $i >> error.txt
+    echo incorrect ranges $range_error >> error.txt
+    echo original ranges $original_range >> error.txt
     fi
     fi
 done
