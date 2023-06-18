@@ -9,7 +9,6 @@ getting_services_return=''
 cleanup_of_ranges_return=''
 checking_related_services_return=''
 
-
 cleanup_of_ranges(){
     local Range=$1
     for z in $(echo $Range) ; do 
