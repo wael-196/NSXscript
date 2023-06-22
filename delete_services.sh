@@ -23,8 +23,12 @@ read -e -i "$reponse" -p "Please enter Y to accept " input
 reponse="${input:-$reponse}"
 if [[ $reponse == Y ]]
 then
+    count=0
     for i in $(echo $services_to_delete )
-    do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
+    do test=$(curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s)
+    if [[ ! "$test" ]]
+    then 
+    count=($count+1)
     done 
 fi
 
