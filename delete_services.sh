@@ -12,7 +12,7 @@ new=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/servic
 services=$services" "$new
 done
 
-echo $services 
+echo $services | tr ' ' '\n' | wc -l
 #  for i in $(echo $services)
 #  do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
 #  done 
