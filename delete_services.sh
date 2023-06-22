@@ -21,7 +21,7 @@ echo services to be deleted
 echo $services_to_delete
 read -e -i "$reponse" -p "Please enter Y to accept " input
 reponse="${input:-$reponse}"
-if [[ $reponse==Y ]]
+if [[ $reponse == Y ]]
 then
     for i in $(echo $services_to_delete )
     do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
