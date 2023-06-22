@@ -20,7 +20,7 @@ highest="${input:-$highest}"
 services_to_delete=''
 for (( l=$lowest ; l<=$highest ; l++))
 do 
-$port=$protocol'_'$l
+port=$protocol'_'$l
 if [[ $(echo $services | grep -w $port) ]]
 then
 services_to_delete=$services_to_delete" "$port 
