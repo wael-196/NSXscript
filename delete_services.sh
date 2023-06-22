@@ -15,5 +15,5 @@ password="VMware1!VMware1!"
 
 for x in [1000-100000]
 do
- curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/$x" -s -d '{"display_name": "TCP_'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "tcp-ports","destination_ports": ["'$x'"],"l4_protocol": "TCP"}]}' --header "Content-Type: application/json" ; )
+ curl -u $user:$password -k -X PATCH "https://$fqdn/policy/api/v1/infra/services/TCP_$x" -s -d '{"display_name": "TCP_'$x'","_revision": 0,"service_entries": [{"resource_type": "L4PortSetServiceEntry","display_name": "tcp-ports","destination_ports": ["'$x'"],"l4_protocol": "TCP"}]}' --header "Content-Type: application/json" ; )
 done
