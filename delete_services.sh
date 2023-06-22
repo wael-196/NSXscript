@@ -12,6 +12,8 @@ services=$services" "$new
 done
 
 total=$(echo $services | tr ' ' '\n' | wc -l)
+
+echo $services
 read -e -i "$lowest" -p "Please enter lowest " input
 lowest="${input:-$lowest}"
 read -e -i "$highest" -p "Please enter highest " input
