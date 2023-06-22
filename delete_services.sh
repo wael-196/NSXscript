@@ -4,6 +4,9 @@ user="admin"
 password="VMware1!VMware1!"
 
 
-curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/services/ -s | grep \"id\" | awk -F ':' '{print $2}' | sed 's/"//g'  | sed 's/,//g'
+services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/services/ -s | grep \"id\" | awk -F ':' '{print $2}' | sed 's/"//g'  | sed 's/,//g')
 
-# curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$x
+
+for i in $(echo $services)
+do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
+done 
