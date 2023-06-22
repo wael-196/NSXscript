@@ -17,10 +17,15 @@ lowest="${input:-$lowest}"
 read -e -i "$highest" -p "Please enter highest " input
 highest="${input:-$highest}"
 services_to_delete=$(echo $services | tr ' ' '\n' | sed -n ''$lowest','$highest'p' |  tr '\n' ' ' ) 
+echo services to be deleted
 echo $services_to_delete
-#  for i in $(echo $services )
-#  do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
-#  done 
-
+read -e -i "$reponse" -p "Please enter Y to accept " input
+reponse="${input:-$reponse}"
+if [[ $reponse==Y ]]
+then
+    for i in $(echo $services_to_delete )
+    do curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s
+    done 
+fi
 
 
