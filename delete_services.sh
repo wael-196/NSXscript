@@ -29,6 +29,7 @@ then
     if [[ ! "$test" ]]
     then 
     count=($count+1)
+    fi
     done 
 fi
 echo $count
