@@ -33,5 +33,5 @@ then
     fi
     done 
 fi
-echo $count services were deleted successfully 
+echo $count services were deleted 
 
