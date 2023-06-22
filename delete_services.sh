@@ -31,5 +31,5 @@ then
     count=($count+1)
     done 
 fi
-
+echo $count
 
