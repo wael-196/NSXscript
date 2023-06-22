@@ -4,7 +4,7 @@ user="admin"
 password="VMware1!VMware1!"
 
 
-services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/services/ -s  |  grep -A 3 \"resource_type\" \: \"Service\" |  grep \"id\" | awk -F ':' '{print $2}' | sed 's/"//g'  | sed 's/,//g')
+services=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/services/ -s  |  grep -A 3 \"resource_type\"  |  grep \"id\" | awk -F ':' '{print $2}' | sed 's/"//g'  | sed 's/,//g')
 
 
 # for i in $(echo $services)
