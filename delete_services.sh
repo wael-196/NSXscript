@@ -29,7 +29,7 @@ then
     if [[ ! "$test" ]]
     then 
     echo $i deleted
-    count=(($count+1))
+    let count=$count+1
     fi
     done 
 fi
