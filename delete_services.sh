@@ -28,7 +28,8 @@ then
     do test=$(curl -u $user:$password -k -X DELETE https://$fqdn/policy/api/v1/infra/services/$i -s)
     if [[ ! "$test" ]]
     then 
-    count=($count+1)
+    echo $i deleted
+    count=(($count+1))
     fi
     done 
 fi
