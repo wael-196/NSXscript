@@ -14,6 +14,7 @@ if [[ "$Deny_rules" ]]
 then
 policy2=$h
 break
+fi
 done
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo -e "\033[1;31mThese Rules are going to be changed\033[0m" 
