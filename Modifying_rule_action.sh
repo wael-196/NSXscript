@@ -19,12 +19,14 @@ done
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo -e "\033[1;31mThese Rules are going to be changed\033[0m" 
 echo  $rules | tr ' ' '\n'
-echo  $policy2 | tr ' ' '\n'
+echo -e "\033[1;31mLog label on below Rules in policy are going to be changed\033[0m" 
 echo  $Deny_rules | tr ' ' '\n'
 
 read -e -i "$respone" -p "Please enter <Y> to accept " input
 respone="${input:-$respone}"
 if [[ "$respone" == "Y" ]]
+then
+if [[ "$Deny_rules" ]]
 then
 for i in $(echo $rules ) ; 
 do tag=$i
@@ -37,7 +39,7 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32m New configuration of rule $i in policy $policy : \033[0m"
+echo -e "\033[1;32m New configuration of rule $i : \033[0m"
 echo "========================================================================================"
 disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo disabled=$disabled
@@ -55,11 +57,13 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32m New log label of rule $i in policy $policy2 : \033[0m"
+echo -e "\033[1;32m New log label of rule $i : \033[0m"
 echo "========================================================================================"
 tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo log label=$tag2 
 fi
 done
-
+else
+echo -e "\033[1;31mCannot find Deny rules with names DENY_FROM_$policy or DENY_TO_$policy\033[0m"; 
+fi
 fi
