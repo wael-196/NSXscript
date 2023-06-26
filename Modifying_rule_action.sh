@@ -14,7 +14,7 @@ if [[ "$respone" == "Y" ]]
 then
 tag=wael
 for i in $(echo $rules ) ; 
-do newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"disabled\" :.*+\"disabled\" : true,+" | sed "s+\"disabled\" :.*+\"tag\" : $tag,+" );
+do newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"disabled\" :.*+\"disabled\" : $action,+" | sed "s+\"disabled\" :.*+\"tag\" : $tag,+" );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"disabled\" :" ) ]] ; 
 then 
