@@ -19,7 +19,7 @@ done
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo -e "\033[1;31mThese Rules are going to be changed\033[0m" 
 echo  $rules | tr ' ' '\n'
-echo  $h | tr ' ' '\n'
+echo  $policy2 | tr ' ' '\n'
 echo  $Deny_rules | tr ' ' '\n'
 
 read -e -i "$respone" -p "Please enter <Y> to accept " input
@@ -40,17 +40,15 @@ echo "==========================================================================
 echo -e "\033[1;32m New action associated with rule $i : \033[0m"
 echo "========================================================================================"
 disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{print $1}')
-tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
-echo disabled=$disabled; 
-echo tag=$tag2 
+echo disabled=$disabled
 fi
 done
 
-for i in $(echo $Deny_plocies ) ; 
+for i in $(echo $Deny_rules ) ; 
 do tag=$i
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s |  sed "s+\"tag\" :.*++" | sed "s+\"disabled\" :.*+\"disabled\" : $action , \"tag\" : \"$tag\" ,+"  );
-result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
-if [[ -z $(echo $result | grep "\"disabled\" :" ) ]] ; 
+newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" ,+"  );
+result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
+if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get rule configuration, something went wrong ! \033[0m"; 
 echo -e $result  ;
@@ -59,13 +57,9 @@ else
 echo "========================================================================================"
 echo -e "\033[1;32m New action associated with rule $i : \033[0m"
 echo "========================================================================================"
-disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{print $1}')
 tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
-echo disabled=$disabled; 
 echo tag=$tag2 
 fi
 done
-
-
 
 fi
