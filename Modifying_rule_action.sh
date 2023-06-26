@@ -37,7 +37,7 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32m New action associated with rule $i : \033[0m"
+echo -e "\033[1;32m New configuration of rule $i in policy $policy : \033[0m"
 echo "========================================================================================"
 disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo disabled=$disabled
@@ -55,10 +55,10 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32m New action associated with rule $i : \033[0m"
+echo -e "\033[1;32m New log label of rule $i in policy $policy2 : \033[0m"
 echo "========================================================================================"
 tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
-echo tag=$tag2 
+echo log label=$tag2 
 fi
 done
 
