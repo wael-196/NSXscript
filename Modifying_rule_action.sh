@@ -7,7 +7,7 @@ policy=$1
 policy=default-layer3-section
 action=\"$2\"
 Deny_plocies=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep DENY_GROUP)
-for h in (echo $Deny_plocies)
+for h in $(echo $Deny_plocies)
 do 
 Deny_rules=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$h/rules -s |  grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "DENY_FROM_default-layer3-section\|DENY_TO_'$policy'")
 if [[ "$Deny_rules" ]]
