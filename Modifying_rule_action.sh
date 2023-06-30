@@ -30,7 +30,7 @@ if [[ "$Deny_rules" ]]
 then
 for i in $(echo $rules ) ; 
 do tag=$i
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s | sed "s+\"disabled\" :.*+\"disabled\" : $action ,+"  );
+newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s   | sed "s+\"disabled\" :.*+\"disabled\" : $action ,+"  );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"disabled\" :" ) ]] ; 
 then 
@@ -48,7 +48,7 @@ done
 
 for i in $(echo $Deny_rules ) ; 
 do tag=$i
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" ,+"  );
+newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*++" | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" , \"action\" : REJECT , +"  );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
 then 
