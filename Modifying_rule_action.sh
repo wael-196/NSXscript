@@ -6,6 +6,7 @@ keyword="INTEGR_"
 policy=$1
 # policy=default-layer3-section
 action=\"$2\"
+action2=REJECT
 Deny_plocies=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep DENY_GROUP)
 for h in $(echo $Deny_plocies)
 do 
@@ -48,7 +49,7 @@ done
 
 for i in $(echo $Deny_rules ) ; 
 do tag=$i
-newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*++" | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" , \"action\" : \"REJECT\" , +"  );
+newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*++" | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" , \"action\" : \"$action2\" , +"  );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
 then 
