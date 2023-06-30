@@ -61,6 +61,8 @@ echo -e "\033[1;32m New log label of rule $i : \033[0m"
 echo "========================================================================================"
 tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo log label=$tag2 
+action2=$(echo $result | awk -F '"action" : ' '{print $2}' | awk -F ',' '{print $1}')
+echo Action=$action2 
 fi
 done
 else
