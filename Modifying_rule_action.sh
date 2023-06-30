@@ -2,7 +2,7 @@
 fqdn="192.168.0.42"
 user="admin"
 password="VMware1!VMware1!"
-keyword="CATCH_"
+keyword="INTEGR_"
 policy=$1
 action="true"
 action2=REJECT
