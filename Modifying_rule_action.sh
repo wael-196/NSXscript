@@ -10,11 +10,12 @@ for i in $(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/d
 do 
 tt=$i" "$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$i/rules -s |  grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "DENY_FROM_\|DENY_TO_")"\n"$tt
 done
-echo $tt tt
+echo -e $tt tt
 for policy in $(cat $file) 
 do action="true"
 action2=REJECT
 Deny_rules=$(echo -e $tt | grep -w "DENY_FROM_$policy\|DENY_TO_$policy" )
+echo $Deny_rules Deny_rules
 if [[ "$Deny_rules" ]]
 then
 policy2=$Deny_rules | awk '{print $1}'
