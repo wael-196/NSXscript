@@ -20,7 +20,7 @@ if [[ "$Deny_rules" ]]
 then
 policy2=$(echo $Deny_rules | awk '{print $1}')
 echo $policy2 hjhjhj
-Deny_rules=$(echo $Deny_rules | sed 's+/<'$policy2'/>++g')
+Deny_rules=$(echo $Deny_rules | sed 's+\<'$policy2'\>++g')
 echo $Deny_rules jjjjj
 fi
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
