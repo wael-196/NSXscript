@@ -20,8 +20,8 @@ if [[ "$Deny_rules" ]]
 then
 policy2=$(echo $Deny_rules | awk '{print $1}')
 echo $policy2 hjhjhj
-Deny_rules=$(echo $Deny_rules | sed 's+/<$policy2/>++g')
-echo $Deny_rules
+Deny_rules=$(echo $Deny_rules | sed 's+/<'$policy2'/>++g')
+echo $Deny_rules jjjjj
 break
 fi
 
