@@ -5,19 +5,24 @@ password="VMware1!VMware1!"
 keyword="INTEGR_"
 file=$1
 comment=$2
+
+for i in $(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep DENY_GROUP ) 
+do 
+tt=$i" "$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$i/rules -s |  grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "DENY_FROM_\|DENY_TO_")"\n"$tt
+done
+
 for policy in $(cat $file) 
 do action="true"
 action2=REJECT
-Deny_plocies=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep DENY_GROUP)
-for h in $(echo $Deny_plocies)
-do 
-Deny_rules=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$h/rules -s |  grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep -w "DENY_FROM_$policy\|DENY_TO_$policy")
+Deny_rules=$(echo -e $tt | grep -w "DENY_FROM_$policy\|DENY_TO_$policy" )
 if [[ "$Deny_rules" ]]
 then
-policy2=$h
+policy2=$Deny_rules | awk '{print $1}'
+Deny_rules=$(echo $Deny_rules | sed 's+/<$policy2/>++g')
 break
 fi
-done
+
+
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 echo -e "\033[1;31mThese Rules are going to be changed\033[0m" 
 echo  $rules | tr ' ' '\n'
