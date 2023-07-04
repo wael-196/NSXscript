@@ -49,7 +49,7 @@ fi
 done
 
 for i in $(echo $Deny_rules ) ; 
-do tag=$comment
+do tag=$comment" "$policy
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"action\" :.*++" | sed "s+\"tag\" :.*+\"tag\" : \"$tag\" , \"action\" : \"$action2\" , +"  );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
