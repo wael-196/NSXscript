@@ -18,7 +18,9 @@ Deny_rules=$(echo -e $tt | grep -w "DENY_FROM_$policy\|DENY_TO_$policy" )
 if [[ "$Deny_rules" ]]
 then
 policy2=$Deny_rules | awk '{print $1}'
+echo $policy2
 Deny_rules=$(echo $Deny_rules | sed 's+/<$policy2/>++g')
+echo $Deny_rules
 break
 fi
 
