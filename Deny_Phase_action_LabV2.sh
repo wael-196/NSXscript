@@ -9,7 +9,7 @@ echo -e "1-Disable with REJECT action \n2-Disable with DROP action\n3-Rollback"
 read -e -i "$option" -p "Please enter option number : " input
 option="${input:-$option}"
 
-if [[ "$option"=="1"]] #Disable with REJECT action
+if [[ "$option" == "1"]] #Disable with REJECT action
 then
 action="true"
 action2=REJECT
@@ -21,11 +21,11 @@ echo -e "\033[1;31mPlease do not add ',' in the log label ! \033[0m"
 read -e -i "$comment" -p "Please enter the log label : " input
 comment="${input:-$comment}"
 done
-elif [[ "$option"=="2"]] #Disable with DROP action
+elif [[ "$option" == "2"]] #Disable with DROP action
 action="true"
 action2=DROP
 comment=''
-elif [[ "$option"=="3"]] #ROLLBACK
+elif [[ "$option" == "3"]] #ROLLBACK
 action="false"
 action2=ALLOW
 comment=''
