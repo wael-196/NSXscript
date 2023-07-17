@@ -90,7 +90,7 @@ done
 
 for i in $(echo $Deny_rules ) ; 
 do 
-if [[ "$comment"]]
+if [[ "$comment" ]]
 then
 tag=$comment-$policy
 else
