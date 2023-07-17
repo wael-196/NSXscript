@@ -33,6 +33,7 @@ action2=ALLOW
 comment=''
 else
 echo -e "\033[1;31mWrong option! \033[0m"
+exit 1
 fi
 
 list_of_policies=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies -s | grep "\"id\"\|cursor" | sed 's/" : "/*/g' |sed 's/"//g' | sed 's/,//g')
