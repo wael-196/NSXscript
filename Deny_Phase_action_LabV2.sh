@@ -22,10 +22,12 @@ read -e -i "$comment" -p "Please enter the log label : " input
 comment="${input:-$comment}"
 done
 elif [[ "$option" == "2" ]] #Disable with DROP action
+then
 action="true"
 action2=DROP
 comment=''
 elif [[ "$option" == "3" ]] #ROLLBACK
+then
 action="false"
 action2=ALLOW
 comment=''
