@@ -89,7 +89,13 @@ fi
 done
 
 for i in $(echo $Deny_rules ) ; 
-do tag=$comment-$policy
+do 
+if [[ "$comment"]]
+then
+tag=$comment-$policy
+else
+tag=''
+fi
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"tag\" :.*++" | sed "s+\"action\" :.*+\"tag\" : \"$tag\" , \"action\" : \"$action2\" , +"  )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
 if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
