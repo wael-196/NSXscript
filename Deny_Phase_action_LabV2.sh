@@ -4,8 +4,8 @@ user="admin"
 password="VMware1!VMware1!"
 keyword="INTEGR_"
 file=$1
-
-echo -e "1-Disable with REJECT action \n2-Disable with DROP action\n3-Rollback"
+listing=0
+echo -e "1-Disable with REJECT action \n2-Disable with DROP action\n3-Rollback\n3-List rules configuration"
 read -e -i "$option" -p "Please enter option number : " input
 option="${input:-$option}"
 
@@ -31,6 +31,9 @@ then
 action="false"
 action2=ALLOW
 comment=''
+elif [[ "$option" == "4" ]] #Listing
+then
+listing=1
 else
 echo -e "\033[1;31mWrong option! \033[0m"
 exit 1
@@ -72,8 +75,13 @@ if [[ "$Deny_rules" && "$rules" ]]
 then
 for i in $(echo $rules ) ; 
 do 
+if [[ "$listing" == "1" ]]
+then
+result=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s)
+else
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s   | sed "s+\"disabled\" :.*+\"disabled\" : $action ,+"  );
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
+fi
 if [[ -z $(echo $result | grep "\"disabled\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get rule configuration, something went wrong ! \033[0m"; 
@@ -87,7 +95,6 @@ disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{pri
 echo disabled=$disabled
 fi
 done
-
 for i in $(echo $Deny_rules ) ; 
 do 
 if [[ "$comment" ]]
@@ -96,8 +103,13 @@ tag=$comment-$policy
 else
 tag=''
 fi
+if [[ "$listing" == "1" ]]
+then
+result=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/$i  -H "Accept: application/json" -s)
+else
 newjson=$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i  -H "Accept: application/json" -s | sed "s+\"tag\" :.*++" | sed "s+\"action\" :.*+\"tag\" : \"$tag\" , \"action\" : \"$action2\" , +"  )
 result=$(curl -u $user:$password -k -X PUT https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy2/rules/$i -s -d "$newjson" --header "Content-Type: application/json" );
+fi
 if [[ -z $(echo $result | grep "\"tag\" :" ) ]] ; 
 then 
 echo -e "\033[1;31mCannot get rule configuration, something went wrong ! \033[0m"; 
