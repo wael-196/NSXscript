@@ -63,13 +63,15 @@ policy2=$(echo $Deny_rules | awk '{print $1}')
 Deny_rules=DENY_FROM_$policy" "DENY_TO_$policy
 rules=$( curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$policy/rules/ -s | grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep $keyword)
 fi
+if [[ "$listing" == "0" ]]
+then
 echo -e  "\033[1;32mThese Rules are going to be changed\033[0m" 
-
 echo  $rules | tr ' ' '\n'
 echo  $Deny_rules | tr ' ' '\n'
 read -e -i "$respone" -p "Please enter <Y> to accept " input
 respone="${input:-$respone}"
-if [[ "$respone" == "Y" ]]
+fi
+if [[ "$respone" == "Y" ]] || [[ "$listing" == "1" ]]
 then
 if [[ "$Deny_rules" && "$rules" ]]
 then
@@ -89,7 +91,7 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32mNew configuration of rule $i : \033[0m"
+echo -e "\033[1;32mConfiguration of rule $i : \033[0m"
 echo "========================================================================================"
 disabled=$(echo $result | awk -F '"disabled" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo disabled=$disabled
@@ -117,7 +119,7 @@ echo -e $result  ;
 exit 1 ;
 else  
 echo "========================================================================================"
-echo -e "\033[1;32mNew configuration of rule $i : \033[0m"
+echo -e "\033[1;32mConfiguration of rule $i : \033[0m"
 echo "========================================================================================"
 tag2=$(echo $result | awk -F '"tag" : ' '{print $2}' | awk -F ',' '{print $1}')
 echo log label=$tag2 
