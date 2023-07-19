@@ -55,7 +55,7 @@ done
 
 for policy in $(cat $file | grep -v ' ') 
 do 
-echo Working on policy $policy
+echo -e \nWorking on policy $policy\n
 Deny_rules=$(echo -e $tt | grep -w DENY_FROM_$policy | grep -w DENY_TO_$policy )
 if [[ "$Deny_rules" ]]
 then
