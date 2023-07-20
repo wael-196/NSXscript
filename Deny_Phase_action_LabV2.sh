@@ -4,6 +4,8 @@ user="admin"
 password="VMware1!VMware1!"
 keyword="INTEGR_"
 file=$1
+if [[ "$file" ]]
+then
 listing=0
 echo -e "1-Disable with REJECT action \n2-Disable with DROP action\n3-Rollback\n4-List rules configuration"
 read -e -i "$option" -p "Please enter option number : " input
@@ -47,10 +49,12 @@ new_list_of_policies=$(curl -u $user:$password -k -X GET https://$fqdn/policy/ap
 cursor=$(echo -e $new_list_of_policies | tr ' ' '\n' | grep cursor | awk -F '*' '{print $2}')
 list_of_policies=$list_of_policies" "$new_list_of_policies
 done
+echo Getting Deny policies
 tt=''
 for i in $(echo -e $list_of_policies | tr ' ' '\n' | grep DENY_GROUP  | awk -F '*' '{print $2}') 
 do 
 tt=$i" "$(curl -u $user:$password -k -X GET https://$fqdn/policy/api/v1/infra/domains/default/security-policies/$i/rules -s |  grep "\"id\"" | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}' | grep  "DENY_FROM_\|DENY_TO_")"\n"$tt
+echo $i
 done
 
 for policy in $(cat $file | grep -v ' ') 
@@ -132,3 +136,6 @@ echo -e "\033[1;31mPlease make sure that all rules exist\033[0m";
 fi
 fi
 done
+else
+echo -e "\033[1;31mPlease enter a filename !\033[0m"
+fi
